@@ -1,15 +1,19 @@
 package com.example.majika.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.majika.model.MenuItem
 import com.example.majika.network.MajikaApi
 import kotlinx.coroutines.launch
 
 class MenuViewModel : ViewModel() {
     private val _status = MutableLiveData<String>()
     val status: LiveData<String> = _status
+    private val _menuItem = MutableLiveData<List<MenuItem>>()
+    val menuItem: LiveData<List<MenuItem>> = _menuItem
 
     init {
         getAllMenu()
@@ -18,8 +22,8 @@ class MenuViewModel : ViewModel() {
     private fun getAllMenu() {
         viewModelScope.launch {
             try {
-                val listResult = MajikaApi.retrofitService.getAllMenu()
-                _status.value = listResult
+                _menuItem.value = MajikaApi.retrofitService.getAllMenu().data
+                Log.d("MenuViewModel", menuItem.toString())
             } catch (e: Exception) {
                 _status.value = "Failure: ${e.message}"
             }

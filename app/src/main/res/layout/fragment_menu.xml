@@ -11,25 +11,28 @@
         <variable name="menuFragment" type="com.example.majika.view.MenuFragment" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <!-- TODO: Update blank fragment layout -->
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@{menuViewModel.status}" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="go to cart"
             android:onClick="@{() -> menuFragment.goToNextScreen()}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toTopOf="@+id/textView" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="go to cart"
+            tools:layout_editor_absoluteX="104dp"
+            tools:layout_editor_absoluteY="271dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="4dp"
+            android:scrollbars="vertical"
+            app:layoutManager="LinearLayoutManager"
+            app:listData="@{menuViewModel.menuItem}"
+            tools:itemCount="32"
+            tools:layout_editor_absoluteX="1dp" />
+    </FrameLayout>
 </layout>

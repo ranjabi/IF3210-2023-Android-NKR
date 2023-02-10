@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.majika.R
+import com.example.majika.adapter.ListMenuAdapter
 import com.example.majika.databinding.FragmentMenuBinding
 import com.example.majika.viewmodel.MenuViewModel
 
@@ -32,7 +33,7 @@ class MenuFragment : Fragment() {
 
         // give binding access to menuViewModel
         binding.menuViewModel = viewModel
-
+        binding.recyclerView.adapter = ListMenuAdapter()
         return binding.root
     }
 
