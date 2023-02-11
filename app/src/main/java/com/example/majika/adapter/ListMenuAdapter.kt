@@ -8,14 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.majika.databinding.ListMenuItemBinding
 import com.example.majika.model.MenuItem
 
-class ListMenuAdapter : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder>(DiffCallback) {
-
-    class MenuItemViewHolder(private var binding: ListMenuItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(MenuItem: MenuItem) {
-            binding.menuItem = MenuItem
-            binding.executePendingBindings()
-        }
-    }
+class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val decreaseClickListener: MenuItemDecreaseListener) : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -26,7 +19,20 @@ class ListMenuAdapter : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder
 
     override fun onBindViewHolder(holder: ListMenuAdapter.MenuItemViewHolder, position: Int) {
         val menuItem = getItem(position)
-        holder.bind(menuItem)
+        holder.bind(menuItem, increaseClickListener, decreaseClickListener)
+    }
+
+    class MenuItemViewHolder(private var binding: ListMenuItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(
+            MenuItem: MenuItem,
+            increaseClickListener: MenuItemIncreaseListener,
+            decreaseClickListener: MenuItemDecreaseListener
+        ) {
+            binding.menuItem = MenuItem
+            binding.increaseClickListener = increaseClickListener
+            binding.decreaseClickListener = decreaseClickListener
+            binding.executePendingBindings()
+        }
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<MenuItem>() {
@@ -40,4 +46,12 @@ class ListMenuAdapter : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder
 
     }
 
+}
+
+class MenuItemIncreaseListener(val increaseclickListener: ((name: String) -> Unit?)? = null)  {
+    fun onIncreaseClick(menuItem: MenuItem) = increaseclickListener?.invoke(menuItem.name)
+}
+
+class MenuItemDecreaseListener(val decreaseclickListener: ((name: String) -> Unit?)? = null)  {
+    fun onDecreaseClick(menuItem: MenuItem) = decreaseclickListener?.invoke(menuItem.name)
 }

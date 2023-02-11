@@ -1,14 +1,18 @@
 package com.example.majika.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.majika.R
 import com.example.majika.adapter.ListMenuAdapter
+import com.example.majika.adapter.MenuItemDecreaseListener
+import com.example.majika.adapter.MenuItemIncreaseListener
 import com.example.majika.databinding.FragmentMenuBinding
 import com.example.majika.viewmodel.MenuViewModel
 
@@ -22,9 +26,7 @@ class MenuFragment : Fragment() {
      * to enable data binding to observe liveData
      */
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentMenuBinding.inflate(inflater)
 
@@ -33,7 +35,13 @@ class MenuFragment : Fragment() {
 
         // give binding access to menuViewModel
         binding.menuViewModel = viewModel
-        binding.recyclerView.adapter = ListMenuAdapter()
+        binding.recyclerView.adapter = ListMenuAdapter(MenuItemIncreaseListener { name ->
+            Log.d("MenuFragment", "${name} increase clicked")
+            Toast.makeText(context, "${name} increase clicked", Toast.LENGTH_LONG).show()
+        }, MenuItemDecreaseListener { name ->
+            Log.d("MenuFragment", "${name} decrease clicked")
+            Toast.makeText(context, "${name} decrease clicked", Toast.LENGTH_LONG).show()
+        })
         return binding.root
     }
 
