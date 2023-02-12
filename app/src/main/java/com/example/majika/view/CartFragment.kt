@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.example.majika.R
 import com.example.majika.databinding.FragmentCartBinding
 import com.example.majika.model.CartApplication
 import com.example.majika.model.Fnb
@@ -72,6 +74,13 @@ class CartFragment : Fragment() {
             val tableRowLength = selectedCount
             bindForTableRow(tableRowLength)
         }
+        _binding?.apply {
+            cartFragment = this@CartFragment
+        }
+    }
+
+    fun goToNextScreen() {
+        findNavController().navigate(R.id.action_cartFragment_to_branchFragment)
     }
 
     override fun onDestroyView() {
