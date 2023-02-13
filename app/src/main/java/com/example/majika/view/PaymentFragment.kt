@@ -57,7 +57,6 @@ class PaymentFragment : Fragment() {
             formats = CodeScanner.ALL_FORMATS
 
             autoFocusMode = AutoFocusMode.SAFE
-            scanMode = ScanMode.CONTINUOUS
             isAutoFocusEnabled = true
             isFlashEnabled = false
         }
@@ -65,7 +64,6 @@ class PaymentFragment : Fragment() {
             activity.runOnUiThread {
                 viewModel.getStatus(it.text)
                 Toast.makeText(activity, it.text, Toast.LENGTH_SHORT).show()
-                Toast.makeText(activity, viewModel.status.value.toString(), Toast.LENGTH_SHORT).show()
                 Log.d("PaymentFragment", "status: ${viewModel.status} or ${viewModel.status.value}")
 
             }
