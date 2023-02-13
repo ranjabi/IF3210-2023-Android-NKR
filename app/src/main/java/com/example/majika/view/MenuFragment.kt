@@ -8,18 +8,24 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import com.example.majika.R
 import com.example.majika.adapter.ListMenuAdapter
 import com.example.majika.adapter.MenuItemDecreaseListener
 import com.example.majika.adapter.MenuItemIncreaseListener
+import com.example.majika.adapter.SectionHeaderAdapter
 import com.example.majika.databinding.FragmentMenuBinding
 import com.example.majika.viewmodel.MenuViewModel
+import androidx.recyclerview.widget.ConcatAdapter
+import com.example.majika.model.Datasource
 
 class MenuFragment : Fragment() {
     private var _binding: FragmentMenuBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MenuViewModel by viewModels()
+    lateinit var adapter: ConcatAdapter
+    lateinit var foodSectionHeaderAdapter: SectionHeaderAdapter
+    lateinit var foodItemAdapter: ListMenuAdapter
+    lateinit var drinkSectionHeaderAdapter: SectionHeaderAdapter
+    lateinit var drinkItemAdapter: ListMenuAdapter
 
     /*
      * inflate layout with data binding, sets its lifecycle owner to MenuFragment
@@ -35,13 +41,27 @@ class MenuFragment : Fragment() {
 
         // give binding access to menuViewModel
         binding.menuViewModel = viewModel
-        binding.recyclerView.adapter = ListMenuAdapter(MenuItemIncreaseListener { name ->
+
+        foodSectionHeaderAdapter = SectionHeaderAdapter(Datasource.getFoodTitle())
+        foodItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name ->
             Log.d("MenuFragment", "${name} increase clicked")
             Toast.makeText(context, "${name} increase clicked", Toast.LENGTH_LONG).show()
         }, MenuItemDecreaseListener { name ->
             Log.d("MenuFragment", "${name} decrease clicked")
             Toast.makeText(context, "${name} decrease clicked", Toast.LENGTH_LONG).show()
         })
+        drinkSectionHeaderAdapter = SectionHeaderAdapter(Datasource.getDrinkTitle())
+        drinkItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name ->
+            Log.d("MenuFragment", "${name} increase clicked 2")
+            Toast.makeText(context, "${name} increase clicked 2", Toast.LENGTH_LONG).show()
+        }, MenuItemDecreaseListener { name ->
+            Log.d("MenuFragment", "${name} decrease clicked 2")
+            Toast.makeText(context, "${name} decrease clicked 2", Toast.LENGTH_LONG).show()
+        })
+
+        adapter = ConcatAdapter(foodSectionHeaderAdapter, foodItemAdapter,drinkSectionHeaderAdapter, drinkItemAdapter)
+        binding.recyclerView.adapter = adapter
+
         return binding.root
     }
 
@@ -51,10 +71,6 @@ class MenuFragment : Fragment() {
         _binding?.apply {
             menuFragment = this@MenuFragment
         }
-    }
-
-    fun goToNextScreen() {
-        findNavController().navigate(R.id.action_menuFragment_to_cartFragment)
     }
 
     override fun onDestroyView() {

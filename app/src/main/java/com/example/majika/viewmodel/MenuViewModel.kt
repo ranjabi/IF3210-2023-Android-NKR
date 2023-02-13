@@ -14,8 +14,10 @@ private const val TAG = "MenuViewModel"
 class MenuViewModel : ViewModel() {
     private val _status = MutableLiveData<String>()
     val status: LiveData<String> = _status
-    private val _menuItem = MutableLiveData<List<MenuItem>>()
-    val menuItem: LiveData<List<MenuItem>> = _menuItem
+    private val _foodItem = MutableLiveData<List<MenuItem>>()
+    val foodItem: LiveData<List<MenuItem>> = _foodItem
+    private val _drinkItem = MutableLiveData<List<MenuItem>>()
+    val drinkItem: LiveData<List<MenuItem>> = _drinkItem
 
     init {
         getAllMenu()
@@ -24,8 +26,8 @@ class MenuViewModel : ViewModel() {
     private fun getAllMenu() {
         viewModelScope.launch {
             try {
-                _menuItem.value = MajikaApi.retrofitService.getAllMenu().data
-                Log.d(TAG, menuItem.toString())
+                _foodItem.value = MajikaApi.retrofitService.getAllFood().data
+                _drinkItem.value = MajikaApi.retrofitService.getAllDrink().data
                 Log.d(TAG, "api loaded")
             } catch (e: Exception) {
                 _status.value = "Failure: ${e.message}"

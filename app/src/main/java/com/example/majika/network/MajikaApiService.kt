@@ -20,8 +20,10 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface MajikaApiService {
-    @GET("menu")
-    suspend fun getAllMenu(): MenuResponse
+    @GET("menu/food")
+    suspend fun getAllFood(): MenuResponse
+    @GET("menu/drink")
+    suspend fun getAllDrink(): MenuResponse
 }
 
 object MajikaApi {
