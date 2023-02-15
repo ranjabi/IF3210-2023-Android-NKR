@@ -7,6 +7,7 @@
     tools:context=".view.SplashActivity">
 
     <ImageView
+        android:id="@+id/splash_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -15,6 +16,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/logo"
         android:scaleX="0.75"
-        android:scaleY="0.75"/>
+        android:scaleY="0.75"
+        android:adjustViewBounds="true"/>
+
+    <TextView
+        android:id="@+id/splash_quote_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/splash_quote"
+        app:layout_constraintTop_toBottomOf="@id/splash_logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="30sp"
+        android:fontFamily="@font/pacifico"
+        android:textColor="@color/red_theme"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

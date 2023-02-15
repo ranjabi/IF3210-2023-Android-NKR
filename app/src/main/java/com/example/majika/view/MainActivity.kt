@@ -32,6 +32,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //            navController.navigate(R.id.menuFragment)
 //        }
 
+        switchFragment(MenuFragment())
+        binding.navbarBottom.selectedItemId = R.id.nav_menu
+
         binding.navbarBottom.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_twibbon -> switchFragment(TwibbonFragment())
