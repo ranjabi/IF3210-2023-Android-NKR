@@ -21,11 +21,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        val navHostFragment = supportFragmentManager
-//            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-//        navController = navHostFragment.navController
-//
-////        setupActionBarWithNavController((navController))
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.fragment_space) as NavHostFragment
+        navController = navHostFragment.navController
+
+//        setupActionBarWithNavController((navController))
 //        val navMenu: ImageView = findViewById(R.id.nav_menu)
 //        navMenu.setOnClickListener {
 //            Log.d(CLICK, "Menu")
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun switchFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.frame_layout, fragment)
+        fragmentTransaction.replace(R.id.fragment_space, fragment)
         fragmentTransaction.commit()
     }
 }
