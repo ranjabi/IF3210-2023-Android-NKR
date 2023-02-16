@@ -5,4 +5,5 @@
     <string name="twibbon_header">Make your memories</string>
     <string name="capture_caption">Capture Image</string>
     <string name="splash_quote">Powered by NKR</string>
+    <string name="retake_caption">Retake Image</string>
 </resources>
