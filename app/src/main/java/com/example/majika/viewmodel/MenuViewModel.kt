@@ -14,10 +14,17 @@ private const val TAG = "MenuViewModel"
 class MenuViewModel : ViewModel() {
     private val _status = MutableLiveData<String>()
     val status: LiveData<String> = _status
+
     private val _foodItem = MutableLiveData<List<MenuItem>>()
     val foodItem: LiveData<List<MenuItem>> = _foodItem
     private val _drinkItem = MutableLiveData<List<MenuItem>>()
     val drinkItem: LiveData<List<MenuItem>> = _drinkItem
+
+    private val _filteredFoodItem = MutableLiveData<List<MenuItem>>()
+    val filteredFoodItem: LiveData<List<MenuItem>> = _filteredFoodItem
+    private val _filteredDrinkItem = MutableLiveData<List<MenuItem>>()
+    val filteredDrinkItem: LiveData<List<MenuItem>> = _filteredDrinkItem
+
 
     init {
         getAllMenu()
@@ -28,11 +35,23 @@ class MenuViewModel : ViewModel() {
             try {
                 _foodItem.value = MajikaApi.retrofitService.getAllFood().data
                 _drinkItem.value = MajikaApi.retrofitService.getAllDrink().data
+
+                _filteredFoodItem.value = foodItem.value
+                _filteredDrinkItem.value = drinkItem.value
                 Log.d(TAG, "api loaded")
             } catch (e: Exception) {
                 _status.value = "Failure: ${e.message}"
                 Log.d(TAG, "Failure: ${e.message}")
             }
+        }
+    }
+
+    fun filterData(query: String) {
+        _filteredFoodItem.value = foodItem.value?.filter{
+            it.name.toLowerCase().contains(query);
+        }
+        _filteredDrinkItem.value = drinkItem.value?.filter{
+            it.name.toLowerCase().contains(query);
         }
     }
 }

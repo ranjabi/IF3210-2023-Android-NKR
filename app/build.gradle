@@ -66,4 +66,6 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.2.0"
     // qr scanner
     implementation 'com.github.yuriy-budiyev:code-scanner:2.3.2'
+    // sliding pane layout
+    implementation "androidx.slidingpanelayout:slidingpanelayout:1.2.0-beta01"
 }

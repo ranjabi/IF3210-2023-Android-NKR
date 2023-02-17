@@ -11,30 +11,33 @@
         <variable name="menuFragment" type="com.example.majika.view.MenuFragment" />
     </data>
 
-    <LinearLayout
+    <androidx.slidingpanelayout.widget.SlidingPaneLayout
+        android:id="@+id/slidingPaneLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#F5F5F5"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.SearchView
+            android:layout_weight="1"
             android:id="@+id/searchView"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:background="#FFFFFF"
-            app:queryHint="Cari..."
+            app:queryHint="Cari makanan atau minuman"
             app:iconifiedByDefault="false"/>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_weight="2"
             android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
+            android:layout_width="500dp"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:layoutManager="LinearLayoutManager"
             app:listFoodData="@{menuViewModel.filteredFoodItem}"
             app:listDrinkData="@{menuViewModel.filteredDrinkItem}"
             tools:itemCount="32" />
-    </LinearLayout>
+    </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 
 </layout>

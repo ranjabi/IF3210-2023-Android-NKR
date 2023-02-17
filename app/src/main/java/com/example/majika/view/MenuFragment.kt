@@ -6,18 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.ConcatAdapter
 import com.example.majika.adapter.ListMenuAdapter
 import com.example.majika.adapter.MenuItemDecreaseListener
 import com.example.majika.adapter.MenuItemIncreaseListener
 import com.example.majika.adapter.SectionHeaderAdapter
 import com.example.majika.databinding.FragmentMenuBinding
-import com.example.majika.viewmodel.MenuViewModel
-import androidx.recyclerview.widget.ConcatAdapter
 import com.example.majika.model.Datasource
+import com.example.majika.viewmodel.MenuViewModel
 
-class MenuFragment : Fragment() {
+class MenuFragment: Fragment() {
     private var _binding: FragmentMenuBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MenuViewModel by viewModels()
@@ -41,6 +42,16 @@ class MenuFragment : Fragment() {
 
         // give binding access to menuViewModel
         binding.menuViewModel = viewModel
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(query: String): Boolean {
+                viewModel.filterData(query)
+                return true
+            }
+        })
 
         foodSectionHeaderAdapter = SectionHeaderAdapter(Datasource.getFoodTitle())
         foodItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name ->
