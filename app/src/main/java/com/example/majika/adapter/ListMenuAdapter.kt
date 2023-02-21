@@ -2,13 +2,16 @@ package com.example.majika.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.majika.R
 import com.example.majika.databinding.ListMenuItemBinding
 import com.example.majika.model.MenuItem
 
-class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val decreaseClickListener: MenuItemDecreaseListener) : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder>(DiffCallback) {
+class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val decreaseClickListener: MenuItemDecreaseListener, val menuItemDBGetter: MenuItemDBGetter) : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -19,18 +22,31 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
 
     override fun onBindViewHolder(holder: ListMenuAdapter.MenuItemViewHolder, position: Int) {
         val menuItem = getItem(position)
-        holder.bind(menuItem, increaseClickListener, decreaseClickListener)
+        holder.itemView.findViewById<ImageView>(R.id.imageButton2).setOnClickListener {
+            increaseClickListener.onIncreaseClick(menuItem)
+            holder.itemView.findViewById<TextView>(R.id.quantity).text = menuItem.quantity.toString()
+            this.notifyItemChanged(position)
+        }
+        holder.itemView.findViewById<ImageView>(R.id.imageButton4).setOnClickListener {
+            decreaseClickListener.onDecreaseClick(menuItem)
+            holder.itemView.findViewById<TextView>(R.id.quantity).text = menuItem.quantity.toString()
+            this.notifyItemChanged(position)
+        }
+        holder.bind(menuItem, increaseClickListener, decreaseClickListener, menuItemDBGetter)
     }
 
     class MenuItemViewHolder(private var binding: ListMenuItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
             MenuItem: MenuItem,
             increaseClickListener: MenuItemIncreaseListener,
-            decreaseClickListener: MenuItemDecreaseListener
+            decreaseClickListener: MenuItemDecreaseListener,
+            menuItemDB: MenuItemDBGetter
         ) {
             binding.menuItem = MenuItem
             binding.increaseClickListener = increaseClickListener
             binding.decreaseClickListener = decreaseClickListener
+            binding.menuItemDB = menuItemDB
+            binding.quantity.text = MenuItem.quantity.toString()
             binding.executePendingBindings()
         }
     }
@@ -41,7 +57,7 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
         }
 
         override fun areContentsTheSame(oldItem: MenuItem, newItem: MenuItem): Boolean {
-            return oldItem.name == newItem.name
+            return oldItem.quantity == newItem.quantity
         }
 
     }
@@ -54,4 +70,8 @@ class MenuItemIncreaseListener(val increaseclickListener: ((name: String, price:
 
 class MenuItemDecreaseListener(val decreaseclickListener: ((name: String) -> Unit?)? = null)  {
     fun onDecreaseClick(menuItem: MenuItem) = decreaseclickListener?.invoke(menuItem.name)
+}
+
+class MenuItemDBGetter(val menuItemDBGetter: (name: String) -> Int) {
+    fun getMenuItem(name: String) = menuItemDBGetter.invoke(name).toString()
 }

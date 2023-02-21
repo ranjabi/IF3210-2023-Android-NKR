@@ -20,9 +20,9 @@ class MenuViewModel : ViewModel() {
     private val _drinkItem = MutableLiveData<List<MenuItem>>()
     val drinkItem: LiveData<List<MenuItem>> = _drinkItem
 
-    private val _filteredFoodItem = MutableLiveData<List<MenuItem>>()
+    val _filteredFoodItem = MutableLiveData<List<MenuItem>>()
     val filteredFoodItem: LiveData<List<MenuItem>> = _filteredFoodItem
-    private val _filteredDrinkItem = MutableLiveData<List<MenuItem>>()
+    val _filteredDrinkItem = MutableLiveData<List<MenuItem>>()
     val filteredDrinkItem: LiveData<List<MenuItem>> = _filteredDrinkItem
 
 
