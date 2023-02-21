@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     switchFragment(TwibbonFragment())
                     updateToolbar("Twibbon")
                 }
+                R.id.nav_location -> {
+                    switchFragment(BranchFragment())
+                    updateToolbar("Location")
+                }
                 R.id.nav_menu -> {
                     switchFragment(MenuFragment())
                     updateToolbar("Menu")
