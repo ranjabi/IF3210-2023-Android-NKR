@@ -34,6 +34,29 @@
                 tools:text="Anchorage"
                 android:text="@{branchItem.name}"
                 android:background="#F55951"/>
+
+            <TextView
+                android:id="@+id/branch_address_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                tools:text="12022 Town Park Circle" />
+
+            <TextView
+                android:id="@+id/branch_phone_number_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                tools:text="397-110-6582" />
+
+            <Button
+                android:id="@+id/branch_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="48dp"
+                android:layout_marginVertical="8dp"
+                android:text="Maps" />
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
