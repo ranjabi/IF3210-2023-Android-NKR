@@ -48,8 +48,8 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
 
 }
 
-class MenuItemIncreaseListener(val increaseclickListener: ((name: String) -> Unit?)? = null)  {
-    fun onIncreaseClick(menuItem: MenuItem) = increaseclickListener?.invoke(menuItem.name)
+class MenuItemIncreaseListener(val increaseclickListener: ((name: String, price: String) -> Unit?)? = null)  {
+    fun onIncreaseClick(menuItem: MenuItem) = increaseclickListener?.invoke(menuItem.name, menuItem.price)
 }
 
 class MenuItemDecreaseListener(val decreaseclickListener: ((name: String) -> Unit?)? = null)  {
