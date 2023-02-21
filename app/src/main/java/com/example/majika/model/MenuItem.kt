@@ -8,5 +8,6 @@ data class MenuItem (
     @Json(name = "currency") val currency: String,
     @Json(name = "price") val price: String,
     @Json(name = "sold") val sold: String,
-    @Json(name = "type") val type: String
+    @Json(name = "type") val type: String,
+    @Json(name = "quantity") var quantity: Int?=0
 )

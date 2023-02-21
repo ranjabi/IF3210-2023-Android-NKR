@@ -1,9 +1,12 @@
 package com.example.majika.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.majika.model.Fnb
 import com.example.majika.model.FnbDao
 import kotlinx.coroutines.launch
+
+private const val TAG = "CartViewModel"
 
 class CartViewModel(private val fnbDao: FnbDao) : ViewModel() {
     val allFnbs: LiveData<List<Fnb>> = fnbDao.getFnbs().asLiveData()
@@ -28,10 +31,25 @@ class CartViewModel(private val fnbDao: FnbDao) : ViewModel() {
             fnbQuantity = fnbQuantity.toInt()
         )
     }
+
+    fun resetFnb() {
+        viewModelScope.launch { fnbDao.clearFnb() }
+    }
+
     // add new fnb that to be used in CartFragment
-    fun addNewFnb (fnbName: String, fnbPrice: String, fnbQuantity: String) {
+    fun addNewFnb (fnbName: String, fnbPrice: String, fnbQuantity: String = "1") {
         val newFnb: Fnb = newFnbEntry(fnbName, fnbPrice, fnbQuantity)
-        insertFnb(newFnb)
+        viewModelScope.launch {
+            val fnb: Fnb = fnbDao.getFnbByName(fnbName)
+            if (fnb == null) {
+                Log.d(TAG, "fnb is not exist, insert to db")
+                insertFnb(newFnb)
+            } else {
+                Log.d(TAG, "fnb is exist, increase its quantity")
+                addFnbQuantity(fnb)
+            }
+        }
+
     }
     // add particular fnb qty that will call FnbDao update
     // and to be used in CartFragment
@@ -50,6 +68,18 @@ class CartViewModel(private val fnbDao: FnbDao) : ViewModel() {
             viewModelScope.launch { fnbDao.update(updatedFnb) }
         } else {
             deleteFnb(fnb)
+        }
+    }
+
+    fun removeFnbQuantityByName (name: String) {
+        viewModelScope.launch {
+            val fnb: Fnb = fnbDao.getFnbByName(name)
+            if(fnb.fnbQuantity - 1 > 0) {
+                val updatedFnb: Fnb = fnb.copy(fnbQuantity = fnb.fnbQuantity - 1)
+                viewModelScope.launch { fnbDao.update(updatedFnb) }
+            } else {
+                deleteFnb(fnb)
+            }
         }
     }
 }

@@ -28,6 +28,9 @@ class CartFragment : Fragment() {
     private fun addFnbQuantity(fnb: Fnb) {
         viewModel.addFnbQuantity(fnb)
     }
+    private fun resetFnb() {
+        viewModel.resetFnb()
+    }
     private fun removeFnbQuantity(fnb: Fnb) {
         viewModel.removeFnbQuantity(fnb)
     }
@@ -35,6 +38,7 @@ class CartFragment : Fragment() {
         binding.apply {
             addFnbQty.setOnClickListener { addFnbQuantity(fnb) }
             removeFnbQty.setOnClickListener { removeFnbQuantity(fnb) }
+            resetFnbBtn.setOnClickListener{ resetFnb() }
         }
     }
     private fun isTableEmpty (tableRowLength: Int): Boolean {
