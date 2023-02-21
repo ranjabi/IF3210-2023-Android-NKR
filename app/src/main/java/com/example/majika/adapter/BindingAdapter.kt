@@ -6,6 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.majika.model.BranchItem
 import com.example.majika.model.MenuItem
 
+@BindingAdapter("listBranchData")
+fun bindRecyclerViewWithBranch(recyclerView: RecyclerView, data: List<BranchItem>?) {
+//    data?.let {
+//        (recyclerView.adapter as? BranchAdapter)?.submitList(data)
+//    }
+}
 @BindingAdapter("listFoodData")
 fun bindRecyclerViewWithFood(recyclerView: RecyclerView, data: List<MenuItem>?) {
     val adapter = recyclerView.adapter as ConcatAdapter

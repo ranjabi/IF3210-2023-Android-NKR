@@ -4,5 +4,5 @@ import com.squareup.moshi.Json
 
 data class BranchResponse (
     @Json(name = "data")
-    val data: ArrayList<BranchItem>
+    val data: List<BranchItem>
 )

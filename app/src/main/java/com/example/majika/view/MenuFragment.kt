@@ -61,7 +61,7 @@ class MenuFragment: Fragment() {
             }
         })
 
-        foodSectionHeaderAdapter = SectionHeaderAdapter(Datasource.getFoodTitle())
+        foodSectionHeaderAdapter = SectionHeaderAdapter(Datasource .getFoodTitle())
         foodItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name, price ->
             cartViewModel.addNewFnb(name, price)
             menuViewModel._filteredFoodItem.value?.find { it.name == name }?.quantity = menuViewModel._filteredFoodItem.value?.find { it.name == name }?.quantity?.plus(

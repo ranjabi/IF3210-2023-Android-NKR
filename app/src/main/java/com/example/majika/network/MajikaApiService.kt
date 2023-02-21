@@ -26,7 +26,7 @@ private val retrofit = Retrofit.Builder()
 
 interface MajikaApiService {
     @GET("branch")
-    suspend fun getAllBranch(): Response<BranchResponse>
+    suspend fun getAllBranch(): BranchResponse
     @GET("menu/food")
     suspend fun getAllFood(): MenuResponse
     @GET("menu/drink")

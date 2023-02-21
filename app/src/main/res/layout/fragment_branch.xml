@@ -6,14 +6,20 @@
     tools:context=".view.BranchFragment">
 
     <data>
-        <variable name="branchFragment" type="com.example.majika.view.BranchFragment" />
+        <variable
+            name="branchFragment"
+            type="com.example.majika.view.BranchFragment" />
+        <variable
+            name="branchViewModel"
+            type="com.example.majika.viewmodel.BranchViewModel" />
     </data>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/branch_recycler_view"
+        android:id="@+id/branchRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        app:listBranchData="@{branchViewModel.branchItem}"/>
 
 </layout>
