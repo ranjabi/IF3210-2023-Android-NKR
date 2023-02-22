@@ -11,19 +11,18 @@ import com.example.majika.network.MajikaApiService
 import kotlinx.coroutines.launch
 
 class BranchViewModel : ViewModel() {
-    val _branchItem = MutableLiveData<List<BranchItem>>()
+    private val _branchItem = MutableLiveData<List<BranchItem>>()
     val branchItem: LiveData<List<BranchItem>> = _branchItem
 
     init {
-        getAllBranch()
+        getAllBranches()
     }
 
-    private fun getAllBranch() {
+    private fun getAllBranches() {
         viewModelScope.launch {
             try {
                 _branchItem.value = MajikaApi.retrofitService.getAllBranch().data
-                Log.d("BranchViewModel","Count loaded: ${branchItem.value?.size}")
-                Log.d("COKS", "First: ${branchItem.value?.get(0)?.name}")
+                Log.d("BranchViewModel","Branch loaded count: ${branchItem.value?.size}")
             } catch (e: Exception) {
                 Log.d("BranchViewModel", "Failure: ${e.message}")
             }

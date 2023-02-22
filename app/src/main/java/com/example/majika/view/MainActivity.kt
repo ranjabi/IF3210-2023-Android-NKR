@@ -32,6 +32,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //            navController.navigate(R.id.menuFragment)
 //        }
 
+        if (supportActionBar != null) {
+            supportActionBar!!.hide()
+        }
+
         switchFragment(MenuFragment())
         updateToolbar("Menu")
         binding.navbarBottom.selectedItemId = R.id.nav_menu

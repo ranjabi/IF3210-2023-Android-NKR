@@ -13,7 +13,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 // base url example = "http://192.168.0.111:8000/v1/"
-private const val BASE_URL = "http://10.10.75.185:3000/v1/"
+private const val BASE_URL = "https://db01-116-206-14-3.ap.ngrok.io/v1/"
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
