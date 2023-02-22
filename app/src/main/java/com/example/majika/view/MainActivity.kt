@@ -21,9 +21,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.fragment_space) as NavHostFragment
-        navController = navHostFragment.navController
+//        val navHostFragment = supportFragmentManager
+//            .findFragmentById(R.id.fragment_space) as NavHostFragment
+//        navController = navHostFragment.navController
 
 //        setupActionBarWithNavController((navController))
 //        val navMenu: ImageView = findViewById(R.id.nav_menu)

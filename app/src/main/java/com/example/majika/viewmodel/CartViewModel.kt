@@ -74,11 +74,13 @@ class CartViewModel(private val fnbDao: FnbDao) : ViewModel() {
     fun removeFnbQuantityByName (name: String) {
         viewModelScope.launch {
             val fnb: Fnb = fnbDao.getFnbByName(name)
-            if(fnb.fnbQuantity - 1 > 0) {
-                val updatedFnb: Fnb = fnb.copy(fnbQuantity = fnb.fnbQuantity - 1)
-                viewModelScope.launch { fnbDao.update(updatedFnb) }
-            } else {
-                deleteFnb(fnb)
+            if (fnb != null) {
+                if(fnb.fnbQuantity > 1) {
+                    val updatedFnb: Fnb = fnb.copy(fnbQuantity = fnb.fnbQuantity - 1)
+                    viewModelScope.launch { fnbDao.update(updatedFnb) }
+                } else {
+                    deleteFnb(fnb)
+                }
             }
         }
     }

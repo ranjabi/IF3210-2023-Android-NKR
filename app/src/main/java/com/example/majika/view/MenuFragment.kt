@@ -15,15 +15,18 @@ import com.example.majika.adapter.*
 import com.example.majika.databinding.FragmentMenuBinding
 import com.example.majika.model.CartApplication
 import com.example.majika.model.Datasource
+import com.example.majika.model.Fnb
 import com.example.majika.viewmodel.CartViewModel
 import com.example.majika.viewmodel.CartViewModelFactory
 import com.example.majika.viewmodel.MenuViewModel
+
+private const val TAG = "MenuFragment"
 
 class MenuFragment: Fragment() {
     private var _binding: FragmentMenuBinding? = null
     private val binding get() = _binding!!
 
-    private val menuViewModel: MenuViewModel by viewModels()
+    private val menuViewModel: MenuViewModel by activityViewModels()
     private val cartViewModel: CartViewModel by activityViewModels {
         CartViewModelFactory(
             (activity?.application as CartApplication).database.fnbDao()
@@ -64,50 +67,39 @@ class MenuFragment: Fragment() {
         foodSectionHeaderAdapter = SectionHeaderAdapter(Datasource .getFoodTitle())
         foodItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name, price ->
             cartViewModel.addNewFnb(name, price)
-            menuViewModel._filteredFoodItem.value?.find { it.name == name }?.quantity = menuViewModel._filteredFoodItem.value?.find { it.name == name }?.quantity?.plus(
-                1
-            )
-
-            Log.d("MenuFragment", "${name} increase clicked")
-            Toast.makeText(context, "${name} increase clicked", Toast.LENGTH_LONG).show()
         }, MenuItemDecreaseListener { name ->
             cartViewModel.removeFnbQuantityByName(name)
-            menuViewModel._filteredFoodItem.value?.find { it.name == name }?.quantity = menuViewModel._filteredFoodItem.value?.find { it.name == name }?.quantity?.minus(
-                1
-            )
-
-            Log.d("MenuFragment", "${name} decrease clicked")
-            Toast.makeText(context, "${name} decrease clicked", Toast.LENGTH_LONG).show()
+            menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name }
+                ?.decreaseQuantity()
         }, MenuItemDBGetter{
-            name ->
-            Log.d("MenuFragment", "${name} is null: ${cartViewModel.allFnbs.value?.find{it.fnbName == name}} from menuItemDBGetter")
+                name ->
             cartViewModel.allFnbs.value?.find{it.fnbName == name}?.fnbQuantity ?: -1
         })
 
         drinkSectionHeaderAdapter = SectionHeaderAdapter(Datasource.getDrinkTitle())
         drinkItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name, price ->
             cartViewModel.addNewFnb(name, price)
-            menuViewModel._filteredDrinkItem.value?.find { it.name == name }?.quantity = menuViewModel._filteredDrinkItem.value?.find { it.name == name }?.quantity?.plus(
-                1
-            )
-
-            Log.d("MenuFragment", "${name} increase clicked")
-            Toast.makeText(context, "${name} increase clicked", Toast.LENGTH_LONG).show()
         }, MenuItemDecreaseListener { name ->
             cartViewModel.removeFnbQuantityByName(name)
-            menuViewModel._filteredDrinkItem.value?.find { it.name == name }?.quantity = menuViewModel._filteredDrinkItem.value?.find { it.name == name }?.quantity?.minus(
-                1
-            )
-
-            Log.d("MenuFragment", "${name} decrease clicked")
-            Toast.makeText(context, "${name} decrease clicked", Toast.LENGTH_LONG).show()
+            menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name }
+                ?.decreaseQuantity()
         }, MenuItemDBGetter{
                 name ->
             cartViewModel.allFnbs.value?.find{it.fnbName == name}?.fnbQuantity ?: -1
         })
 
         adapter = ConcatAdapter(foodSectionHeaderAdapter, foodItemAdapter,drinkSectionHeaderAdapter, drinkItemAdapter)
+
         binding.recyclerView.adapter = adapter
+
+        Log.d(TAG, "init quantity")
+        cartViewModel.allFnbs.observe(viewLifecycleOwner) {
+                items ->
+            items.forEach{ updateQuantity(it) }
+            adapter.notifyDataSetChanged()
+        }
+        Log.d(TAG, "finish update quantity")
+
 
         return binding.root
     }
@@ -117,6 +109,20 @@ class MenuFragment: Fragment() {
 
         _binding?.apply {
             menuFragment = this@MenuFragment
+        }
+    }
+
+    private fun updateQuantity(it: Fnb) {
+        Log.d(TAG, "iterating: ${it.fnbName}")
+        val tempFood = menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == it.fnbName }
+        if (tempFood != null) {
+            tempFood.quantity = it.fnbQuantity
+            Log.d(TAG, "quantity for ${tempFood.name} updated")
+        }
+        val tempDrink = menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == it.fnbName }
+        if (tempDrink != null) {
+            tempDrink.quantity = it.fnbQuantity
+            Log.d(TAG, "quantity for ${tempDrink.name} updated")
         }
     }
 

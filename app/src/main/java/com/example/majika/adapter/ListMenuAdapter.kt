@@ -3,13 +3,14 @@ package com.example.majika.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.majika.R
 import com.example.majika.databinding.ListMenuItemBinding
 import com.example.majika.model.MenuItem
+import java.text.NumberFormat
+import java.util.*
 
 class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val decreaseClickListener: MenuItemDecreaseListener, val menuItemDBGetter: MenuItemDBGetter) : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder>(DiffCallback) {
 
@@ -24,13 +25,9 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
         val menuItem = getItem(position)
         holder.itemView.findViewById<ImageView>(R.id.imageButton2).setOnClickListener {
             increaseClickListener.onIncreaseClick(menuItem)
-            holder.itemView.findViewById<TextView>(R.id.quantity).text = menuItem.quantity.toString()
-            this.notifyItemChanged(position)
         }
         holder.itemView.findViewById<ImageView>(R.id.imageButton4).setOnClickListener {
             decreaseClickListener.onDecreaseClick(menuItem)
-            holder.itemView.findViewById<TextView>(R.id.quantity).text = menuItem.quantity.toString()
-            this.notifyItemChanged(position)
         }
         holder.bind(menuItem, increaseClickListener, decreaseClickListener, menuItemDBGetter)
     }
@@ -47,6 +44,13 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
             binding.decreaseClickListener = decreaseClickListener
             binding.menuItemDB = menuItemDB
             binding.quantity.text = MenuItem.quantity.toString()
+            binding.soldText.text = MenuItem.sold + "terjual"
+
+            val localeID = Locale("in", "ID")
+            val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
+            val priceText: String = formatRupiah.format(MenuItem.price.toInt()).toString()
+
+            binding.price.text = priceText.substring(0, priceText.length - 3);
             binding.executePendingBindings()
         }
     }
