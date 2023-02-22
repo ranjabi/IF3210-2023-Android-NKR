@@ -17,17 +17,19 @@ class ListCartAdapter : ListAdapter<Fnb, ListCartAdapter.CartViewHolder>(CartCom
     }
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        val current = getItem(position)
-        holder.bind(current.fnbName, current.fnbPrice)
+        val fnb = getItem(position)
+        holder.bind(fnb.fnbName, fnb.fnbPrice, fnb.fnbQuantity)
     }
 
     class CartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val cartItemView: TextView = itemView.findViewById(R.id.textView3)
-        private val cartDescView: TextView = itemView.findViewById(R.id.textView4)
+        private val cartName: TextView = itemView.findViewById(R.id.cartName)
+        private val cartPrice: TextView = itemView.findViewById(R.id.cartPrice)
+        private val cartQuantity: TextView = itemView.findViewById(R.id.cartQuantity)
 
-        fun bind(text: String?, descText: Int?) {
-            cartItemView.text = text
-            cartDescView.text = descText.toString()
+        fun bind(name: String?, price: Int?, quantity: Int?) {
+            cartName.text = name
+            cartPrice.text = price.toString()
+            cartQuantity.text = quantity.toString()
         }
 
         companion object {

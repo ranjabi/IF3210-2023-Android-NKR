@@ -42,7 +42,10 @@ class CartFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
         viewModel.allFnbs.observe(viewLifecycleOwner, Observer {
-                fnbs -> fnbs?.let {adapter.submitList(it)}
+                fnbs -> fnbs?.let {
+            adapter.submitList(it)
+            binding.totalPrice.text = "Total price: " + fnbs.sumOf { fnb -> fnb.fnbPrice * fnb.fnbQuantity }.toString()
+                }
         })
 
         return binding.root

@@ -46,7 +46,7 @@ abstract class FnbRoomDatabase : RoomDatabase() {
                     context.applicationContext,
                     FnbRoomDatabase::class.java,
                     "fnb_database"
-                ).addCallback(FnbDatabaseCallback(scope)).build()
+                ).fallbackToDestructiveMigration().addCallback(FnbDatabaseCallback(scope)).build()
                 Log.d("FnbRoomDatabase", "database build success")
                 INSTANCE = instance
                 return instance
