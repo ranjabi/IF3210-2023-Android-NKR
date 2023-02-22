@@ -9,10 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.majika.R
 import com.example.majika.databinding.ListMenuItemBinding
 import com.example.majika.model.MenuItem
+import kotlinx.coroutines.Job
 import java.text.NumberFormat
 import java.util.*
 
-class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val decreaseClickListener: MenuItemDecreaseListener, val menuItemDBGetter: MenuItemDBGetter) : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder>(DiffCallback) {
+class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val decreaseClickListener: MenuItemDecreaseListener) : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -29,20 +30,18 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
         holder.itemView.findViewById<ImageView>(R.id.imageButton4).setOnClickListener {
             decreaseClickListener.onDecreaseClick(menuItem)
         }
-        holder.bind(menuItem, increaseClickListener, decreaseClickListener, menuItemDBGetter)
+        holder.bind(menuItem, increaseClickListener, decreaseClickListener)
     }
 
     class MenuItemViewHolder(private var binding: ListMenuItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
             MenuItem: MenuItem,
             increaseClickListener: MenuItemIncreaseListener,
-            decreaseClickListener: MenuItemDecreaseListener,
-            menuItemDB: MenuItemDBGetter
+            decreaseClickListener: MenuItemDecreaseListener
         ) {
             binding.menuItem = MenuItem
             binding.increaseClickListener = increaseClickListener
             binding.decreaseClickListener = decreaseClickListener
-            binding.menuItemDB = menuItemDB
             binding.quantity.text = MenuItem.quantity.toString()
             binding.soldText.text = MenuItem.sold + "terjual"
 
@@ -68,14 +67,10 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
 
 }
 
-class MenuItemIncreaseListener(val increaseclickListener: ((name: String, price: String) -> Unit?)? = null)  {
-    fun onIncreaseClick(menuItem: MenuItem) = increaseclickListener?.invoke(menuItem.name, menuItem.price)
+class MenuItemIncreaseListener(val increaseclickListener: (name: String, price: String) -> Job )  {
+    fun onIncreaseClick(menuItem: MenuItem) = increaseclickListener.invoke(menuItem.name, menuItem.price)
 }
 
 class MenuItemDecreaseListener(val decreaseclickListener: ((name: String) -> Unit?)? = null)  {
     fun onDecreaseClick(menuItem: MenuItem) = decreaseclickListener?.invoke(menuItem.name)
-}
-
-class MenuItemDBGetter(val menuItemDBGetter: (name: String) -> Int) {
-    fun getMenuItem(name: String) = menuItemDBGetter.invoke(name).toString()
 }

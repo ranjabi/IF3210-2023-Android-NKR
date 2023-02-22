@@ -4,9 +4,6 @@
 
     <data>
         <variable
-            name="menuItemDB"
-            type="com.example.majika.adapter.MenuItemDBGetter" />
-        <variable
             name="menuItem"
             type="com.example.majika.model.MenuItem" />
         <variable

@@ -11,7 +11,7 @@
         android:required="false" />
 
     <application
-        android:name="com.example.majika.model.CartApplication"
+        android:name="com.example.majika.model.MajikaApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

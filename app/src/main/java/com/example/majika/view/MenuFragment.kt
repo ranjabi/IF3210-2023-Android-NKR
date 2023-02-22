@@ -5,17 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import com.example.majika.adapter.*
 import com.example.majika.databinding.FragmentMenuBinding
-import com.example.majika.model.CartApplication
 import com.example.majika.model.Datasource
 import com.example.majika.model.Fnb
+import com.example.majika.model.MajikaApplication
 import com.example.majika.viewmodel.CartViewModel
 import com.example.majika.viewmodel.CartViewModelFactory
 import com.example.majika.viewmodel.MenuViewModel
@@ -29,7 +27,7 @@ class MenuFragment: Fragment() {
     private val menuViewModel: MenuViewModel by activityViewModels()
     private val cartViewModel: CartViewModel by activityViewModels {
         CartViewModelFactory(
-            (activity?.application as CartApplication).database.fnbDao()
+            (activity?.application as MajikaApplication).repository
         )
     }
 
@@ -71,9 +69,6 @@ class MenuFragment: Fragment() {
             cartViewModel.removeFnbQuantityByName(name)
             menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name }
                 ?.decreaseQuantity()
-        }, MenuItemDBGetter{
-                name ->
-            cartViewModel.allFnbs.value?.find{it.fnbName == name}?.fnbQuantity ?: -1
         })
 
         drinkSectionHeaderAdapter = SectionHeaderAdapter(Datasource.getDrinkTitle())
@@ -83,9 +78,6 @@ class MenuFragment: Fragment() {
             cartViewModel.removeFnbQuantityByName(name)
             menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name }
                 ?.decreaseQuantity()
-        }, MenuItemDBGetter{
-                name ->
-            cartViewModel.allFnbs.value?.find{it.fnbName == name}?.fnbQuantity ?: -1
         })
 
         adapter = ConcatAdapter(foodSectionHeaderAdapter, foodItemAdapter,drinkSectionHeaderAdapter, drinkItemAdapter)
