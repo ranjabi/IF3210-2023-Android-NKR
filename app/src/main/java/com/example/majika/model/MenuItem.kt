@@ -9,5 +9,18 @@ data class MenuItem (
     @Json(name = "price") val price: String,
     @Json(name = "sold") val sold: String,
     @Json(name = "type") val type: String,
-    @Json(name = "quantity") var quantity: Int?=0
+    @Json(name = "quantity") var quantity: Int=0
 )
+{
+    fun increaseQuantity() {
+        quantity = quantity.plus(1)
+    }
+
+    fun decreaseQuantity() {
+        if (quantity > 0) {
+            quantity = quantity.minus(1)
+        } else {
+            quantity = 0
+        }
+    }
+}

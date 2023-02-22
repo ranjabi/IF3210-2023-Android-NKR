@@ -3,7 +3,6 @@ package com.example.majika.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -24,13 +23,9 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
         val menuItem = getItem(position)
         holder.itemView.findViewById<ImageView>(R.id.imageButton2).setOnClickListener {
             increaseClickListener.onIncreaseClick(menuItem)
-            holder.itemView.findViewById<TextView>(R.id.quantity).text = menuItem.quantity.toString()
-            this.notifyItemChanged(position)
         }
         holder.itemView.findViewById<ImageView>(R.id.imageButton4).setOnClickListener {
             decreaseClickListener.onDecreaseClick(menuItem)
-            holder.itemView.findViewById<TextView>(R.id.quantity).text = menuItem.quantity.toString()
-            this.notifyItemChanged(position)
         }
         holder.bind(menuItem, increaseClickListener, decreaseClickListener, menuItemDBGetter)
     }

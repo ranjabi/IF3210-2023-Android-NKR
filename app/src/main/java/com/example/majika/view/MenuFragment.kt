@@ -69,6 +69,8 @@ class MenuFragment: Fragment() {
             cartViewModel.addNewFnb(name, price)
         }, MenuItemDecreaseListener { name ->
             cartViewModel.removeFnbQuantityByName(name)
+            menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name }
+                ?.decreaseQuantity()
         }, MenuItemDBGetter{
                 name ->
             cartViewModel.allFnbs.value?.find{it.fnbName == name}?.fnbQuantity ?: -1
@@ -79,6 +81,8 @@ class MenuFragment: Fragment() {
             cartViewModel.addNewFnb(name, price)
         }, MenuItemDecreaseListener { name ->
             cartViewModel.removeFnbQuantityByName(name)
+            menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name }
+                ?.decreaseQuantity()
         }, MenuItemDBGetter{
                 name ->
             cartViewModel.allFnbs.value?.find{it.fnbName == name}?.fnbQuantity ?: -1
@@ -89,9 +93,11 @@ class MenuFragment: Fragment() {
         binding.recyclerView.adapter = adapter
 
         Log.d(TAG, "init quantity")
-        cartViewModel.allFnbs.observe(viewLifecycleOwner) { items -> items.forEach{
-            updateQuantity(it)
-        }}
+        cartViewModel.allFnbs.observe(viewLifecycleOwner) {
+                items ->
+            items.forEach{ updateQuantity(it) }
+            adapter.notifyDataSetChanged()
+        }
         Log.d(TAG, "finish update quantity")
 
 
