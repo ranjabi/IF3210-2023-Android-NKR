@@ -54,9 +54,9 @@
                         tools:text="Broadbeans" />
 
                     <TextView
+                        android:id="@+id/soldText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{menuItem.sold}"
                         tools:text="10RB+ Terjual" />
 
                     <TextView
@@ -74,11 +74,10 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/textView"
+                        android:id="@+id/price"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="@{menuItem.price}"
                         android:textAlignment="center"
                         android:textColor="?attr/colorPrimary"
                         android:textSize="18dp"

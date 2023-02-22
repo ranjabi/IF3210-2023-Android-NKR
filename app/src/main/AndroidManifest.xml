@@ -24,7 +24,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         >
         <activity android:name=".view.SplashActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:theme="@style/Theme.Majika"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +33,7 @@
         </activity>
         <activity
             android:name=".view.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:theme="@style/Theme.Majika"
             android:exported="true">
 
         </activity>

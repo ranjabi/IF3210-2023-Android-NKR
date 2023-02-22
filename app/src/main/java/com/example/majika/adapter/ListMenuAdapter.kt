@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.majika.R
 import com.example.majika.databinding.ListMenuItemBinding
 import com.example.majika.model.MenuItem
+import java.text.NumberFormat
+import java.util.*
 
 class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val decreaseClickListener: MenuItemDecreaseListener, val menuItemDBGetter: MenuItemDBGetter) : ListAdapter<MenuItem, ListMenuAdapter.MenuItemViewHolder>(DiffCallback) {
 
@@ -42,6 +44,13 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
             binding.decreaseClickListener = decreaseClickListener
             binding.menuItemDB = menuItemDB
             binding.quantity.text = MenuItem.quantity.toString()
+            binding.soldText.text = MenuItem.sold + "terjual"
+
+            val localeID = Locale("in", "ID")
+            val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
+            val priceText: String = formatRupiah.format(MenuItem.price.toInt()).toString()
+
+            binding.price.text = priceText.substring(0, priceText.length - 3);
             binding.executePendingBindings()
         }
     }
