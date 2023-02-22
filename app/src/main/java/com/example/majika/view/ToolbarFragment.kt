@@ -1,5 +1,10 @@
 package com.example.majika.view
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,25 +15,36 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.majika.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ToolbarFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ToolbarFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+class ToolbarFragment : Fragment(), SensorEventListener {
     private var fragmentName: String? = null
+    private lateinit var sensorManager: SensorManager
+    private var temperature: Sensor? = null
+
+    companion object {
+        @JvmStatic
+        fun newInstance(fragmentName: String) =
+            ToolbarFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, fragmentName)
+                }
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             fragmentName = it.getString(ARG_PARAM1)
         }
+
+        sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
+            temperature = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
+        } else {
+            Log.d("NoSensor", "No Sensor Found");
+        }
+
     }
 
     override fun onCreateView(
@@ -53,22 +69,18 @@ class ToolbarFragment : Fragment() {
         view.findViewById<TextView>(R.id.action_bar_title).text = fragmentName
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ToolbarFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(fragmentName: String) =
-            ToolbarFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, fragmentName)
-                }
-            }
+    override fun onResume() {
+        super.onResume()
+        sensorManager.registerListener(this, temperature, SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (fragmentName == "Menu") {
+            view?.findViewById<TextView>(R.id.temperature_TV)?.text = "${event?.values?.get(0).toString()} C"
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        // Do nothing
     }
 }

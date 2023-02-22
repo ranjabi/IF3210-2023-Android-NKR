@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -39,6 +40,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import kotlin.math.max
+
+const val KEY_IMAGE_BITMAP = "image_bitmap_key"
 
 class TwibbonFragment : Fragment() {
     private lateinit var textureView: TextureView
@@ -71,7 +74,6 @@ class TwibbonFragment : Fragment() {
 
     // Bind textureView, start cameraManager, and ask for permission
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d("LayoutChecker", "onViewCreated called")
         super.onViewCreated(view, savedInstanceState)
 
         // Bind textureView and get the cameraManager
@@ -88,9 +90,13 @@ class TwibbonFragment : Fragment() {
     }
 
     // Start a new thread and enable the preview again
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onResume() {
         super.onResume()
-        Log.d("LayoutChecker", "onResume called")
+
+        // Lock the screen to portrait orientation
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         startThread()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (isCameraPermGranted()) {
@@ -110,26 +116,22 @@ class TwibbonFragment : Fragment() {
     // Release thread onPause
     override fun onPause() {
         super.onPause()
-        Log.d("LayoutChecker", "onPause called")
         if (this::cameraDevice.isInitialized) {
             closeCamera()
             stopThread()
         }
     }
 
-//    override fun onStop() {
-//        super.onStop()
-//        Log.d("LayoutChecker", "onStopped called")
-//        closeCamera()
-//        stopThread()
-//    }
+    override fun onStop() {
+        super.onStop()
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
+    }
 
     // Enable camera preview
     private fun enablePreview() {
         Log.d("previewMethod", "Enabling camera preview")
         if (textureView.isAvailable) {
             setupCamera()
-            transformImage(textureView.width, textureView.height)
             openCamera()
             imageReader = ImageReader.newInstance(1080, 1920, ImageFormat.JPEG, 2)
             imageReader.setOnImageAvailableListener(setOnImageAvailableListener, null)
@@ -254,21 +256,15 @@ class TwibbonFragment : Fragment() {
         // Draw the twibbon bitmap in the canvas
         canvas.drawBitmap(twibbonBitmap, 0f, 0f, null)
 
-        // Prepare to replace layout
-//        val layout: ViewGroup = requireView().findViewById(R.id.twibbon_layout)
-//        val textureView: TextureView = requireView().findViewById(R.id.texture_view)
-
         // Insert the image data into the imageView
         imageView.setImageBitmap(finalImageBitmap)
 
-        // Replace the view
-//        layout.removeView(textureView)
 
         // Saving the image
         val outputStream = ByteArrayOutputStream()
         finalImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         val bytes = outputStream.toByteArray()
-//        saveImage(bytes)
+        saveImage(bytes)
 
         // Close image and imageReader
         image.close()
@@ -321,39 +317,6 @@ class TwibbonFragment : Fragment() {
         cameraDevice.close()
         imageReader.close()
         Log.d("ClosingCamera", "Successfully close the camera")
-    }
-
-    private fun transformImage(width: Int, height: Int) {
-        val matrix = Matrix()
-        val displayManager =
-            requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-        val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
-        val rotation = display.rotation
-
-        val cameraChar = cameraManager.getCameraCharacteristics(cameraId)
-        val map = cameraChar.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-        val previewSize = map!!.getOutputSizes(SurfaceTexture::class.java).first()
-
-        val textureRectF = RectF(0f, 0f, width.toFloat(), height.toFloat())
-        val previewRectF = RectF(0f, 0f, previewSize.height.toFloat(), previewSize.width.toFloat())
-        val centerX = textureRectF.centerX()
-        val centerY = textureRectF.centerY()
-
-        if (isRotated(rotation)) {
-            previewRectF.offset(centerX - previewRectF.centerX(), centerY - previewRectF.centerY())
-            matrix.setRectToRect(textureRectF, previewRectF, Matrix.ScaleToFit.FILL)
-
-            val scale =
-                max(width.toFloat() / previewSize.width, height.toFloat() / previewSize.height)
-            matrix.postScale(scale, scale, centerX, centerY)
-            matrix.postRotate((90 * (rotation - 2)).toFloat(), centerX, centerY)
-        }
-
-        textureView.setTransform(matrix)
-    }
-
-    private fun isRotated(rotation: Int): Boolean {
-        return rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270
     }
 
     private fun rotateBitmap(source: Bitmap, angle: Float): Bitmap {
