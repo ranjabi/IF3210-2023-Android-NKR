@@ -33,7 +33,7 @@
         </activity>
         <activity
             android:name=".view.MainActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:theme="@style/Theme.Majika"
             android:exported="true">
 
         </activity>

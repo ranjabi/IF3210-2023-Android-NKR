@@ -18,8 +18,7 @@
         android:id="@+id/branchRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
+        android:background="#F5F5F5"
         android:scrollbars="vertical"
-        app:listBranchData="@{branchViewModel.branchItem}"/>
-
+        app:layoutManager="LinearLayoutManager" />
 </layout>
