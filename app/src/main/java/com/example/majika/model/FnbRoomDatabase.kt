@@ -30,7 +30,6 @@ abstract class FnbRoomDatabase : RoomDatabase() {
                     fnbDao.insert(fnb)
                     fnbDao.insert(fnb2)
                     Log.d("FnbRoomDatabase", "callback is called")
-
                 }
             }
         }

@@ -44,7 +44,7 @@ class CartFragment : Fragment() {
         viewModel.allFnbs.observe(viewLifecycleOwner, Observer {
                 fnbs -> fnbs?.let {
             adapter.submitList(it)
-            binding.totalPrice.text = "Total price: " + fnbs.sumOf { fnb -> fnb.fnbPrice * fnb.fnbQuantity }.toString()
+            binding.totalPrice.text = "Rp" + fnbs.sumOf { fnb -> fnb.fnbPrice * fnb.fnbQuantity }.toString()
                 }
         })
 
