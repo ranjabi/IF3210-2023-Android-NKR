@@ -11,8 +11,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.example.majika.R
 
 private const val ARG_PARAM1 = "param1"
@@ -67,6 +69,12 @@ class ToolbarFragment : Fragment(), SensorEventListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<TextView>(R.id.action_bar_title).text = fragmentName
+
+        if (fragmentName == "Payment") {
+            view.findViewById<ImageButton>(R.id.action_bar_back).setOnClickListener {
+                requireActivity().supportFragmentManager.popBackStackImmediate()
+            }
+        }
     }
 
     override fun onResume() {

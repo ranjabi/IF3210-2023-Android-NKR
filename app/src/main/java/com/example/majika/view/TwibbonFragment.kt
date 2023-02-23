@@ -1,48 +1,37 @@
 package com.example.majika.view
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.view.LayoutInflater
-import android.view.TextureView
-import android.view.View
-import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import android.Manifest
+import android.R.attr.bitmap
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
 import android.content.pm.ActivityInfo
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.ImageFormat
-import android.graphics.Matrix
-import android.graphics.RectF
-import android.graphics.SurfaceTexture
+import android.content.pm.PackageManager
+import android.graphics.*
 import android.hardware.camera2.*
-import android.hardware.display.DisplayManager
 import android.media.Image
 import android.media.ImageReader
 import android.os.*
 import android.provider.MediaStore
 import android.util.Log
-import android.view.Display
-import android.view.Surface
+import android.util.TypedValue
+import android.view.*
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
 import com.example.majika.R
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import kotlin.math.max
+import kotlin.math.abs
 
-const val KEY_IMAGE_BITMAP = "image_bitmap_key"
 
+const val KEY_RESOLUTION_SET = "resolution_set_key"
 class TwibbonFragment : Fragment() {
     private lateinit var textureView: TextureView
     private lateinit var handler: Handler
@@ -54,11 +43,15 @@ class TwibbonFragment : Fragment() {
     private lateinit var cameraDevice: CameraDevice
     private lateinit var cameraCaptureSession: CameraCaptureSession
     private lateinit var cameraCaptureRequest: CaptureRequest.Builder
+    private var pictureTaken = false
 
     // Image processing variables
     private lateinit var imageReader: ImageReader
     private lateinit var imageView: ImageView
     private lateinit var finalImageBitmap: Bitmap
+
+    // TextureView resizing variable
+    private var resolutionSet = false
 
     companion object {
         private const val REQUEST_ID_MULTIPLE_PERMISSION = 100
@@ -76,6 +69,11 @@ class TwibbonFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        if (savedInstanceState != null) {
+            resolutionSet = savedInstanceState.getBoolean(KEY_RESOLUTION_SET)
+        }
+
         // Bind textureView and get the cameraManager
         textureView = view.findViewById(R.id.texture_view)
         cameraManager = requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -85,8 +83,15 @@ class TwibbonFragment : Fragment() {
         getPermissions()
 
         view.findViewById<ImageButton>(R.id.take_another_button).setOnClickListener {
+            pictureTaken = false
             restartPreview()
+
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(KEY_RESOLUTION_SET, resolutionSet)
+        super.onSaveInstanceState(outState)
     }
 
     // Start a new thread and enable the preview again
@@ -98,18 +103,10 @@ class TwibbonFragment : Fragment() {
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         startThread()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (isCameraPermGranted()) {
-                textureView.surfaceTextureListener = surfaceTextureListener
-                Log.d("PreviewCaller", "Called in onResume")
-                enablePreview()
-            }
-        } else {
-            if (isCameraPermGranted() && isWritePermGranted()) {
-                textureView.surfaceTextureListener = surfaceTextureListener
-                Log.d("PreviewCaller", "Called in onResume")
-                enablePreview()
-            }
+        if (isCameraPermGranted()) {
+            textureView.surfaceTextureListener = surfaceTextureListener
+            Log.d("PreviewCaller", "Called in onResume")
+            enablePreview()
         }
     }
 
@@ -127,23 +124,29 @@ class TwibbonFragment : Fragment() {
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
     }
 
+
     // Enable camera preview
     private fun enablePreview() {
-        Log.d("previewMethod", "Enabling camera preview")
-        if (textureView.isAvailable) {
+        Log.d("previewMethod", "Enabling camera preview, with pictureTaken ${pictureTaken}")
+        if (textureView.isAvailable && !pictureTaken) {
+            Log.d("previewMethod", "Entered here")
             setupCamera()
+            resizeTextureView()
             openCamera()
             imageReader = ImageReader.newInstance(1080, 1920, ImageFormat.JPEG, 2)
             imageReader.setOnImageAvailableListener(setOnImageAvailableListener, null)
 
             requireView().findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
-                cameraCaptureRequest =
-                    cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
-                cameraCaptureRequest.addTarget(imageReader.surface)
-                cameraCaptureSession.capture(cameraCaptureRequest.build(), null, null)
+                if (!pictureTaken) {
+                    cameraCaptureRequest =
+                        cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
+                    cameraCaptureRequest.addTarget(imageReader.surface)
+                    cameraCaptureSession.capture(cameraCaptureRequest.build(), null, null)
+                } else {
+                    null
+                }
+
             }
-
-
         }
     }
 
@@ -167,7 +170,6 @@ class TwibbonFragment : Fragment() {
     private val surfaceTextureListener = object : TextureView.SurfaceTextureListener {
         override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
             Log.d("surfaceTexture", "Now Available")
-
             enablePreview()
         }
 
@@ -245,13 +247,23 @@ class TwibbonFragment : Fragment() {
                 false
             )
 
+        val centerX = (twibbonBitmap.width) / 2
+        val centerY = (twibbonBitmap.height) / 2
+
         // Create a new bitmap with the dimensions of the 2nd image (the twibbon frame)
         finalImageBitmap =
             Bitmap.createBitmap(twibbonBitmap.width, twibbonBitmap.height, twibbonBitmap.config)
         val canvas = Canvas(finalImageBitmap)
 
+        val bitmapBounds = Rect(
+            centerX - scaledPictureBitmap.width / 2,
+            centerY - scaledPictureBitmap.height / 2,
+            centerX + scaledPictureBitmap.width / 2,
+            centerY + scaledPictureBitmap.height / 2
+        )
+
         // Draw the picture bitmap in the canvas
-        canvas.drawBitmap(scaledPictureBitmap, 0f, 0f, null)
+        canvas.drawBitmap(scaledPictureBitmap, null, bitmapBounds, null)
 
         // Draw the twibbon bitmap in the canvas
         canvas.drawBitmap(twibbonBitmap, 0f, 0f, null)
@@ -264,11 +276,17 @@ class TwibbonFragment : Fragment() {
         val outputStream = ByteArrayOutputStream()
         finalImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         val bytes = outputStream.toByteArray()
-        saveImage(bytes)
+
+        // Only save with API level 30 or up devices
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            saveImage(bytes)
+        }
 
         // Close image and imageReader
         image.close()
         closeCamera()
+
+        pictureTaken = true
 
         Toast.makeText(requireContext(), "Image Captured", Toast.LENGTH_SHORT).show()
     }
@@ -336,26 +354,67 @@ class TwibbonFragment : Fragment() {
         lateinit var outputStream: OutputStream
 
         // API level 30 and above uses MediaStore instead of normal outputStream
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val resolver = requireActivity().contentResolver
-            val values = ContentValues().apply {
-                put(MediaStore.Images.Media.DISPLAY_NAME, "test.jpg")
-                put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-                put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-            }
-
-            val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-            uri?.let { outputStream = resolver.openOutputStream(it)!! }
-        } else {
-            val path = Environment.getExternalStorageDirectory().toString()
-            val file = File(path, "test.jpg")
-            outputStream = FileOutputStream(file)
+        val resolver = requireActivity().contentResolver
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "test.jpg")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
         }
+
+        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        uri?.let { outputStream = resolver.openOutputStream(it)!! }
+
         try {
             outputStream.write(bytes)
             outputStream.close()
         } catch (e: IOException) {
             e.printStackTrace()
+        }
+    }
+
+    private fun resizeTextureView() {
+        if (!resolutionSet) {
+            val cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
+            val map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+            val previewSizes = map?.getOutputSizes(SurfaceTexture::class.java)
+            val previewSize = previewSizes?.get(0)
+
+            val viewWidth = textureView.width.toFloat()
+            val viewHeight = textureView.height.toFloat()
+            val aspectRatio = previewSize!!.width.toFloat() / previewSize.height
+
+            val screenAspectRatio = resources.displayMetrics.widthPixels.toFloat() / resources.displayMetrics.heightPixels.toFloat()
+            Log.d("CAMERAASPECT", aspectRatio.toString())
+            Log.d("CAMERAASPECT1", screenAspectRatio.toString())
+
+            if (screenAspectRatio < 0.48f) {
+                if (abs(aspectRatio - 1.34) < 0.01) {
+                    val newWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 310f , resources.displayMetrics)
+                    val newHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400f , resources.displayMetrics)
+                    textureView.layoutParams = FrameLayout.LayoutParams(newWidth.toInt(), newHeight.toInt(), Gravity.CENTER)
+                } else if (abs(aspectRatio - 1.78) < 0.01) {
+                    val newWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 225f , resources.displayMetrics)
+                    val newHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400f , resources.displayMetrics)
+                    textureView.layoutParams = FrameLayout.LayoutParams(newWidth.toInt(), newHeight.toInt(), Gravity.CENTER)
+                }
+            }
+
+//            Log.d("CAMERAASPECT", previewSize.toString())
+
+//            val newWidth = textureView.width / aspectRatio!!
+
+//            Log.d("CAMERAASPECT", aspectRatio.toString());
+//            Log.d("CAMERAASPECTW", (textureView.width.toString()))
+//            Log.d("CAMERAASPECTH", (textureView.height.toString()))
+//            Log.d("CAMERAASPECTCW", (newWidth.toString()))
+//            Log.d("CAMERAASPECT", (textureView.width.div(aspectRatio!!)).toString());
+//            textureView.layoutParams = FrameLayout.LayoutParams(
+//                (textureView.width / aspectRatio!!).toInt(),
+//                textureView.height,
+//                Gravity.CENTER
+//            )
+
+            resolutionSet = true
         }
     }
 
@@ -366,14 +425,6 @@ class TwibbonFragment : Fragment() {
         if (!isCameraPermGranted()) {
             Log.d("PermissionManager", "Add camera to request")
             listPermissionRequired.add(Manifest.permission.CAMERA)
-        }
-
-        // Request write permission
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            if (!isWritePermGranted()) {
-                Log.d("PermissionManager", "Add write external storage to request")
-                listPermissionRequired.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            }
         }
 
         if (listPermissionRequired.isNotEmpty()) {
@@ -389,19 +440,6 @@ class TwibbonFragment : Fragment() {
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
 
         if (cameraPerm == PackageManager.PERMISSION_GRANTED) {
-            return true
-        }
-
-        return false
-    }
-
-    private fun isWritePermGranted(): Boolean {
-        val writePerm = ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        if (writePerm == PackageManager.PERMISSION_GRANTED) {
             return true
         }
 

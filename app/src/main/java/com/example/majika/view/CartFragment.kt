@@ -80,6 +80,9 @@ class CartFragment : Fragment() {
             transaction?.replace(R.id.fragment_space, paymentFragment)
             transaction?.addToBackStack(null)
             transaction?.commit()
+
+            updateToolbar("Payment")
+
         }
         return binding.root
     }
@@ -99,5 +102,12 @@ class CartFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun updateToolbar(title: String) {
+        val toolbarFragment: Fragment = ToolbarFragment.newInstance(title)
+        val fragmentTransaction = fragmentManager?.beginTransaction()
+        fragmentTransaction?.add(R.id.action_bar_space, toolbarFragment)
+        fragmentTransaction?.commit()
     }
 }
