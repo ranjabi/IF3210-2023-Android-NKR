@@ -10,29 +10,65 @@
             type="com.example.majika.viewmodel.PaymentViewModel" />
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.budiyev.android.codescanner.CodeScannerView
             android:id="@+id/scanner_view"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="350dp"
             app:autoFocusButtonColor="@android:color/white"
             app:autoFocusButtonVisible="true"
             app:flashButtonColor="@android:color/white"
             app:flashButtonVisible="true"
-            app:maskColor="#25000000"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:maskColor="#25000000">
+
+        </com.budiyev.android.codescanner.CodeScannerView>
+
+        <TextView
+            android:id="@+id/totalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Total: Rp150.000"
+            app:layout_constraintTop_toBottomOf="@+id/scanner_view" />
 
         <TextView
             android:id="@+id/qr_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/scanner_view"
+            android:layout_marginVertical="8dp"
+            android:text="Scanning..."
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/totalPrice" />
+
+        <ImageView
+            android:id="@+id/imageStatus"
+            android:layout_width="248dp"
+            android:layout_height="146dp"
+            android:layout_marginBottom="28dp"
             android:layout_centerHorizontal="true"
-            android:layout_margin="20dp"
-            android:text="Scanning..." />
-    </RelativeLayout>
+            app:layout_constraintBottom_toTopOf="@+id/retryBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/qr_text_view" />
+
+        <Button
+            android:id="@+id/retryBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="80dp"
+            android:text="Ambil Ulang"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

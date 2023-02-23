@@ -6,16 +6,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.budiyev.android.codescanner.*
 import com.example.majika.R
 import com.example.majika.databinding.FragmentPaymentBinding
+import com.example.majika.model.MajikaApplication
+import com.example.majika.viewmodel.CartViewModel
+import com.example.majika.viewmodel.CartViewModelFactory
 import com.example.majika.viewmodel.PaymentViewModel
+import java.text.NumberFormat
+import java.util.*
 
 private const val CAMERA_REQUEST_CODE = 101
 
@@ -24,6 +32,11 @@ class PaymentFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var codeScanner: CodeScanner
     private val viewModel: PaymentViewModel by viewModels()
+    private val cartViewModel: CartViewModel by activityViewModels {
+        CartViewModelFactory(
+            (activity?.application as MajikaApplication).repository
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -35,17 +48,43 @@ class PaymentFragment : Fragment() {
 
         setupPermission()
 
+        val localeID = Locale("in", "ID")
+        val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
+
+        cartViewModel.allFnbs.observe(viewLifecycleOwner, Observer {
+                fnbs -> fnbs?.let {
+            val totalPrice = fnbs.sumOf { fnb -> fnb.fnbPrice * fnb.fnbQuantity }
+            val priceText: String = formatRupiah.format(totalPrice).toString()
+            binding.totalPrice.text = "Total price: " + priceText.substring(0, priceText.length - 3);
+        }
+        })
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val scannerView = view.findViewById<CodeScannerView>(R.id.scanner_view)
         val activity = requireActivity()
+        val imageStatus: ImageView = binding.imageStatus
+        val qrTextView: TextView = binding.qrTextView
+        qrTextView.text = "Scanning..."
 
         // observe payment status
         val nameObserver = Observer<String> { status ->
-            val qrTextView: TextView = binding.qrTextView
-            qrTextView.text = status
+            if (status == "SUCCESS") {
+                qrTextView.text = ""
+                imageStatus.setImageResource(R.drawable.payment_success)
+            } else if (status == "FAILED") {
+                qrTextView.text = ""
+                imageStatus.setImageResource(R.drawable.payment_failed)
+            }
+        }
+
+        val retryBtn: Button = binding.retryBtn
+        retryBtn.setOnClickListener {
+            qrTextView.text = "Scanning..."
+            codeScanner.startPreview()
+            imageStatus.setImageResource(0)
         }
 
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
@@ -67,9 +106,6 @@ class PaymentFragment : Fragment() {
                 Log.d("PaymentFragment", "status: ${viewModel.status} or ${viewModel.status.value}")
 
             }
-        }
-        scannerView.setOnClickListener {
-            codeScanner.startPreview()
         }
     }
 
