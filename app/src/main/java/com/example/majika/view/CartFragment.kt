@@ -18,17 +18,16 @@ import com.example.majika.databinding.FragmentCartBinding
 import com.example.majika.model.MajikaApplication
 import com.example.majika.viewmodel.CartViewModel
 import com.example.majika.viewmodel.CartViewModelFactory
+import com.example.majika.viewmodel.MenuViewModel
 import java.text.NumberFormat
 import java.util.*
 
 class CartFragment : Fragment() {
-    private val viewModel: CartViewModel by activityViewModels {
+    private val menuViewModel: MenuViewModel by activityViewModels()
+    private val cartViewModel: CartViewModel by activityViewModels {
         CartViewModelFactory(
             (activity?.application as MajikaApplication).repository
         )
-    }
-    private fun isTableEmpty (tableRowLength: Int): Boolean {
-        return (tableRowLength == 0)
     }
 
     private var _binding: FragmentCartBinding? = null
@@ -45,16 +44,20 @@ class CartFragment : Fragment() {
         val recyclerView = binding.cartRecyclerView
         val adapter = ListCartAdapter(
             CartItemIncreaseListener { name, price ->
-                viewModel.addNewFnb(name, price)
+                cartViewModel.addNewFnb(name, price)
             },
             CartItemDecreaseListener { name ->
-                viewModel.removeFnbQuantityByName(name)
+                cartViewModel.removeFnbQuantityByName(name)
+                menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name }
+                    ?.decreaseQuantity()
+                menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name }
+                    ?.decreaseQuantity()
             }
         )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        viewModel.allFnbs.observe(viewLifecycleOwner, Observer {
+        cartViewModel.allFnbs.observe(viewLifecycleOwner, Observer {
                 fnbs -> fnbs?.let {
             adapter.submitList(it)
             // embed with local currency format
@@ -73,19 +76,7 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        binding.addToCart.setOnClickListener { addNewFnb() }
-//        // still dummy only operate first data
-//        viewModel.retrieveFirstFnb().observe(this.viewLifecycleOwner) { selectedFnb ->
-//            if(selectedFnb != null) {
-//                firstFnb = selectedFnb
-//                bindForFirstFnb(firstFnb)
-//            }
-//        }
-//        // still dummy to check whether the fnb table is empty or not
-//        viewModel.getTableRowLength().observe(this.viewLifecycleOwner) { selectedCount ->
-//            val tableRowLength = selectedCount
-//            bindForTableRow(tableRowLength)
-//        }
+
         _binding?.apply {
             cartFragment = this@CartFragment
         }

@@ -66,18 +66,20 @@ class MenuFragment: Fragment() {
         foodItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name, price ->
             cartViewModel.addNewFnb(name, price)
         }, MenuItemDecreaseListener { name ->
-            cartViewModel.removeFnbQuantityByName(name)
+
             menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name }
                 ?.decreaseQuantity()
+            cartViewModel.removeFnbQuantityByName(name)
         })
 
         drinkSectionHeaderAdapter = SectionHeaderAdapter(Datasource.getDrinkTitle())
         drinkItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name, price ->
             cartViewModel.addNewFnb(name, price)
         }, MenuItemDecreaseListener { name ->
-            cartViewModel.removeFnbQuantityByName(name)
+
             menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name }
                 ?.decreaseQuantity()
+            cartViewModel.removeFnbQuantityByName(name)
         })
 
         adapter = ConcatAdapter(foodSectionHeaderAdapter, foodItemAdapter,drinkSectionHeaderAdapter, drinkItemAdapter)

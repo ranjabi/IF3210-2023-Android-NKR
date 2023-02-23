@@ -80,7 +80,7 @@ class CartItemIncreaseListener(
     fun onIncreaseClick(cartName: String, cartPrice: String) = clickListener.invoke(cartName, cartPrice)
 }
 class CartItemDecreaseListener(
-    val clickListener: (name: String) -> Job
+    val clickListener: (name: String) -> Unit?
 ) {
     fun onDecreaseClick(cartName: String) = clickListener.invoke(cartName)
 }

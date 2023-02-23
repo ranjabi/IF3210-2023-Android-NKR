@@ -71,6 +71,6 @@ class MenuItemIncreaseListener(val increaseclickListener: (name: String, price: 
     fun onIncreaseClick(menuItem: MenuItem) = increaseclickListener.invoke(menuItem.name, menuItem.price)
 }
 
-class MenuItemDecreaseListener(val decreaseclickListener: ((name: String) -> Unit?)? = null)  {
+class MenuItemDecreaseListener(val decreaseclickListener: (name: String) -> Job)  {
     fun onDecreaseClick(menuItem: MenuItem) = decreaseclickListener?.invoke(menuItem.name)
 }
