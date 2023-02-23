@@ -97,6 +97,8 @@ class PaymentFragment : Fragment() {
                         fragmentTransaction.add(R.id.action_bar_space, toolbarFragment)
                         fragmentTransaction.commit()
                     }
+
+                    (activity as MainActivity).updateBottomNavbar(R.id.nav_menu)
                 }, 5000)
             } else if (status == "FAILED") {
                 qrTextView.text = ""

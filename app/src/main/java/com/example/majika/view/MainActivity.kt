@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.majika.R
@@ -83,5 +84,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.action_bar_space, toolbarFragment)
         fragmentTransaction.commit()
+    }
+
+    fun updateBottomNavbar(selectedItemId: Int) {
+        binding.navbarBottom.selectedItemId = selectedItemId
     }
 }
