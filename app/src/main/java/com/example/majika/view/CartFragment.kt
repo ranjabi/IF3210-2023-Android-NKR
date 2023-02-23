@@ -73,6 +73,8 @@ class CartFragment : Fragment() {
             } > 0
         })
 
+        updateToolbar("Cart")
+
         // redirect to PaymentFragment using "Bayar" button
         binding.button2.setOnClickListener {
             val paymentFragment = PaymentFragment()
