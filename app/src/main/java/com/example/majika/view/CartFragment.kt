@@ -57,8 +57,7 @@ class CartFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        cartViewModel.allFnbs.observe(viewLifecycleOwner, Observer {
-                fnbs -> fnbs?.let {
+        cartViewModel.allFnbs.observe(viewLifecycleOwner, Observer { fnbs -> fnbs?.let {
             adapter.submitList(it)
             // embed with local currency format
             val localelId = Locale("in", "ID")
@@ -67,10 +66,21 @@ class CartFragment : Fragment() {
                 fnbs.sumOf { fnb -> fnb.fnbPrice * fnb.fnbQuantity }.toInt()
             ).toString()
 
-            binding.totalPrice.text = totalPriceText.substring(0, totalPriceText.length - 3)
-                }
+            binding.totalPrice.text = totalPriceText.substring(0, totalPriceText.length - 3)}
+            // enable payment button when the total price > 0
+            binding.button2.isEnabled = fnbs.sumOf {
+                    fnb -> fnb.fnbPrice * fnb.fnbQuantity
+            } > 0
         })
 
+        // redirect to PaymentFragment using "Bayar" button
+        binding.button2.setOnClickListener {
+            val paymentFragment = PaymentFragment()
+            val transaction = fragmentManager?.beginTransaction()
+            transaction?.replace(R.id.fragment_space, paymentFragment)
+            transaction?.addToBackStack(null)
+            transaction?.commit()
+        }
         return binding.root
     }
 

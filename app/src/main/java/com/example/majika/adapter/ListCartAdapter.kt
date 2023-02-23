@@ -3,6 +3,7 @@ package com.example.majika.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.majika.R
 import com.example.majika.model.Fnb
+import com.example.majika.view.PaymentFragment
 import kotlinx.coroutines.Job
 import java.text.NumberFormat
 import java.util.*
