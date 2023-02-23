@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
@@ -67,24 +68,40 @@ class PaymentFragment : Fragment() {
         val activity = requireActivity()
         val imageStatus: ImageView = binding.imageStatus
         val qrTextView: TextView = binding.qrTextView
-        qrTextView.text = "Scanning..."
-
-        // observe payment status
-        val nameObserver = Observer<String> { status ->
-            if (status == "SUCCESS") {
-                qrTextView.text = ""
-                imageStatus.setImageResource(R.drawable.payment_success)
-            } else if (status == "FAILED") {
-                qrTextView.text = ""
-                imageStatus.setImageResource(R.drawable.payment_failed)
-            }
-        }
-
         val retryBtn: Button = binding.retryBtn
         retryBtn.setOnClickListener {
             qrTextView.text = "Scanning..."
             codeScanner.startPreview()
             imageStatus.setImageResource(0)
+        }
+
+        qrTextView.text = "Scanning..."
+
+        // observe payment status
+        val nameObserver = Observer<String> { status ->
+            if (status == "SUCCESS") {
+                qrTextView.visibility = GONE
+                imageStatus.setImageResource(R.drawable.payment_success)
+                retryBtn.visibility = GONE
+                val handler = android.os.Handler()
+                handler.postDelayed({
+                    val menuFragment = MenuFragment()
+                    val transaction = fragmentManager?.beginTransaction()
+                    transaction?.replace(R.id.fragment_space, menuFragment)
+                    transaction?.addToBackStack(null)
+                    transaction?.commit()
+
+                    val toolbarFragment: Fragment = ToolbarFragment.newInstance("Menu")
+                    val fragmentTransaction = fragmentManager?.beginTransaction()
+                    if (fragmentTransaction != null) {
+                        fragmentTransaction.add(R.id.action_bar_space, toolbarFragment)
+                        fragmentTransaction.commit()
+                    }
+                }, 5000)
+            } else if (status == "FAILED") {
+                qrTextView.text = ""
+                imageStatus.setImageResource(R.drawable.payment_failed)
+            }
         }
 
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
