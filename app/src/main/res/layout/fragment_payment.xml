@@ -23,6 +23,10 @@
             app:autoFocusButtonVisible="true"
             app:flashButtonColor="@android:color/white"
             app:flashButtonVisible="true"
+            app:layout_constrainedHeight="false"
+            app:layout_constrainedWidth="false"
+            app:layout_constraintBottom_toTopOf="@id/totalPrice"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:maskColor="#25000000">

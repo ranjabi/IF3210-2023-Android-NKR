@@ -14,6 +14,7 @@ import com.example.majika.databinding.FragmentMenuBinding
 import com.example.majika.model.Datasource
 import com.example.majika.model.Fnb
 import com.example.majika.model.MajikaApplication
+import com.example.majika.model.MenuItem
 import com.example.majika.viewmodel.CartViewModel
 import com.example.majika.viewmodel.CartViewModelFactory
 import com.example.majika.viewmodel.MenuViewModel
@@ -62,24 +63,26 @@ class MenuFragment: Fragment() {
             }
         })
 
+        menuViewModel.resetFilter()
+
         foodSectionHeaderAdapter = SectionHeaderAdapter(Datasource .getFoodTitle())
         foodItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name, price ->
             cartViewModel.addNewFnb(name, price)
-        }, MenuItemDecreaseListener { name ->
+        }, MenuItemDecreaseListener { name, price ->
 
-            menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name }
+            menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name && menuItem.price == price }
                 ?.decreaseQuantity()
-            cartViewModel.removeFnbQuantityByName(name)
+            cartViewModel.removeFnbQuantityByNameAndPrice(name, price)
         })
 
         drinkSectionHeaderAdapter = SectionHeaderAdapter(Datasource.getDrinkTitle())
         drinkItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name, price ->
             cartViewModel.addNewFnb(name, price)
-        }, MenuItemDecreaseListener { name ->
+        }, MenuItemDecreaseListener { name, price ->
 
-            menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name }
+            menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name && menuItem.price == price }
                 ?.decreaseQuantity()
-            cartViewModel.removeFnbQuantityByName(name)
+            cartViewModel.removeFnbQuantityByNameAndPrice(name, price)
         })
 
         adapter = ConcatAdapter(foodSectionHeaderAdapter, foodItemAdapter,drinkSectionHeaderAdapter, drinkItemAdapter)
@@ -87,9 +90,16 @@ class MenuFragment: Fragment() {
         binding.recyclerView.adapter = adapter
 
         Log.d(TAG, "init quantity")
-        cartViewModel.allFnbs.observe(viewLifecycleOwner) {
+        menuViewModel.foodItem.observe(viewLifecycleOwner) {
+            // update menu view model for initial render
                 items ->
-            items.forEach{ updateQuantity(it) }
+            items.forEach{ initMenuQuantity(it) }
+            adapter.notifyDataSetChanged()
+        }
+        cartViewModel.allFnbs.observe(viewLifecycleOwner) {
+            // update menu view model for any changes in cart view model
+            items ->
+            items.forEach{ updateMenuQuantity(it) }
             adapter.notifyDataSetChanged()
         }
         Log.d(TAG, "finish update quantity")
@@ -106,17 +116,28 @@ class MenuFragment: Fragment() {
         }
     }
 
-    private fun updateQuantity(it: Fnb) {
+    private fun updateMenuQuantity(it: Fnb) {
         Log.d(TAG, "iterating: ${it.fnbName}")
-        val tempFood = menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == it.fnbName }
+        if (menuViewModel._foodItem.value == null) {
+            Log.d(TAG, "food item is null")
+        }
+        val tempFood = menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == it.fnbName && menuItem.price == it.fnbPrice.toString() }
         if (tempFood != null) {
             tempFood.quantity = it.fnbQuantity
             Log.d(TAG, "quantity for ${tempFood.name} updated")
         }
-        val tempDrink = menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == it.fnbName }
+        val tempDrink = menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == it.fnbName && menuItem.price == it.fnbPrice.toString() }
         if (tempDrink != null) {
             tempDrink.quantity = it.fnbQuantity
             Log.d(TAG, "quantity for ${tempDrink.name} updated")
+        }
+    }
+
+    private fun initMenuQuantity(it: MenuItem) {
+        Log.d(TAG, "init iterating: ${it.name}")
+        val tempMenu = cartViewModel.allFnbs.value?.find { fnb -> fnb.fnbName == it.name && fnb.fnbPrice == it.price.toInt() }
+        if (tempMenu != null) {
+            it.quantity = tempMenu.fnbQuantity
         }
     }
 

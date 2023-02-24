@@ -43,7 +43,7 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
             binding.increaseClickListener = increaseClickListener
             binding.decreaseClickListener = decreaseClickListener
             binding.quantity.text = MenuItem.quantity.toString()
-            binding.soldText.text = MenuItem.sold + "terjual"
+            binding.soldText.text = MenuItem.sold + " terjual"
 
             val localeID = Locale("in", "ID")
             val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
@@ -71,6 +71,6 @@ class MenuItemIncreaseListener(val increaseclickListener: (name: String, price: 
     fun onIncreaseClick(menuItem: MenuItem) = increaseclickListener.invoke(menuItem.name, menuItem.price)
 }
 
-class MenuItemDecreaseListener(val decreaseclickListener: (name: String) -> Job)  {
-    fun onDecreaseClick(menuItem: MenuItem) = decreaseclickListener?.invoke(menuItem.name)
+class MenuItemDecreaseListener(val decreaseclickListener: (name: String, price: String) -> Unit)  {
+    fun onDecreaseClick(menuItem: MenuItem) = decreaseclickListener.invoke(menuItem.name, menuItem.price)
 }

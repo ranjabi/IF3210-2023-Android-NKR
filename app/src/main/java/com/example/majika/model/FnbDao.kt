@@ -18,8 +18,8 @@ interface FnbDao {
     fun getFnbs(): Flow<List<Fnb>>
     @Query("SELECT COUNT(*) FROM fnb") // to check row length in the table
     fun getRowLength(): Flow<Int>
-    @Query("SELECT * FROM fnb WHERE name = :name")
-    suspend fun getFnbByName(name: String): Fnb
+    @Query("SELECT * FROM fnb WHERE name = :name AND price = :price")
+    suspend fun getFnbByNameAndPrice(name: String, price: Int): Fnb
     @Query("DELETE FROM fnb")
     suspend fun clearFnb()
 }

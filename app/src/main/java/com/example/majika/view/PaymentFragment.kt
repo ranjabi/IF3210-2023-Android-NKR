@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
@@ -22,6 +23,7 @@ import com.example.majika.databinding.FragmentPaymentBinding
 import com.example.majika.model.MajikaApplication
 import com.example.majika.viewmodel.CartViewModel
 import com.example.majika.viewmodel.CartViewModelFactory
+import com.example.majika.viewmodel.MenuViewModel
 import com.example.majika.viewmodel.PaymentViewModel
 import java.text.NumberFormat
 import java.util.*
@@ -33,6 +35,7 @@ class PaymentFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var codeScanner: CodeScanner
     private val viewModel: PaymentViewModel by viewModels()
+    private val menuViewModel: MenuViewModel by activityViewModels()
     private val cartViewModel: CartViewModel by activityViewModels {
         CartViewModelFactory(
             (activity?.application as MajikaApplication).repository
@@ -69,6 +72,7 @@ class PaymentFragment : Fragment() {
         val imageStatus: ImageView = binding.imageStatus
         val qrTextView: TextView = binding.qrTextView
         val retryBtn: Button = binding.retryBtn
+        val totalPrice: TextView = binding.totalPrice
         retryBtn.setOnClickListener {
             qrTextView.text = "Scanning..."
             codeScanner.startPreview()
@@ -78,11 +82,15 @@ class PaymentFragment : Fragment() {
         qrTextView.text = "Scanning..."
 
         // observe payment status
-        val nameObserver = Observer<String> { status ->
+        val priceObserver = Observer<String> { status ->
             if (status == "SUCCESS") {
                 qrTextView.visibility = GONE
                 imageStatus.setImageResource(R.drawable.payment_success)
                 retryBtn.visibility = GONE
+                totalPrice.visibility = INVISIBLE
+                menuViewModel.resetQuantity()
+                cartViewModel.resetFnb()
+
                 val handler = android.os.Handler()
                 handler.postDelayed({
                     val menuFragment = MenuFragment()
@@ -107,7 +115,7 @@ class PaymentFragment : Fragment() {
         }
 
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
-        viewModel.status.observe(viewLifecycleOwner, nameObserver)
+        viewModel.status.observe(viewLifecycleOwner, priceObserver)
 
         codeScanner = CodeScanner(activity, scannerView)
         codeScanner.apply {
@@ -121,7 +129,6 @@ class PaymentFragment : Fragment() {
         codeScanner.decodeCallback = DecodeCallback {
             activity.runOnUiThread {
                 viewModel.getStatus(it.text)
-                Toast.makeText(activity, it.text, Toast.LENGTH_SHORT).show()
                 Log.d("PaymentFragment", "status: ${viewModel.status} or ${viewModel.status.value}")
 
             }

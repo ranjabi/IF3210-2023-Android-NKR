@@ -45,8 +45,8 @@ class CartViewModel(private val repository: CartRepository) : ViewModel() {
         repository.removeFnbQuantity(fnb)
     }
 
-    fun removeFnbQuantityByName (name: String) = viewModelScope.launch {
-        repository.removeFnbQuantityByName(name)
+    fun removeFnbQuantityByNameAndPrice (name: String, price: String) = viewModelScope.launch {
+        repository.removeFnbQuantityByNameAndPrice(name, price)
     }
 }
 

@@ -12,9 +12,6 @@ data class MenuItem (
     @Json(name = "quantity") var quantity: Int=0
 )
 {
-    fun increaseQuantity() {
-        quantity = quantity.plus(1)
-    }
 
     fun decreaseQuantity() {
         if (quantity > 0) {
