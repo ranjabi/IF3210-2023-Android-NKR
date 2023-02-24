@@ -55,6 +55,7 @@ class PaymentFragment : Fragment() {
         val localeID = Locale("in", "ID")
         val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
 
+        // observe changes to set the total price
         cartViewModel.allFnbs.observe(viewLifecycleOwner, Observer {
                 fnbs -> fnbs?.let {
             val totalPrice = fnbs.sumOf { fnb -> fnb.fnbPrice * fnb.fnbQuantity }
@@ -91,6 +92,7 @@ class PaymentFragment : Fragment() {
                 menuViewModel.resetQuantity()
                 cartViewModel.resetFnb()
 
+//                switch to menu fragment
                 val handler = android.os.Handler()
                 handler.postDelayed({
                     val menuFragment = MenuFragment()
@@ -114,7 +116,7 @@ class PaymentFragment : Fragment() {
             }
         }
 
-        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        // Observe the payment status, passing in this activity as the LifecycleOwner and the observer.
         viewModel.status.observe(viewLifecycleOwner, priceObserver)
 
         codeScanner = CodeScanner(activity, scannerView)
@@ -128,6 +130,7 @@ class PaymentFragment : Fragment() {
         }
         codeScanner.decodeCallback = DecodeCallback {
             activity.runOnUiThread {
+//                call payment API to verify payment status
                 viewModel.getStatus(it.text)
                 Log.d("PaymentFragment", "status: ${viewModel.status} or ${viewModel.status.value}")
 
