@@ -54,13 +54,19 @@ class PaymentFragment : Fragment() {
 
         val localeID = Locale("in", "ID")
         val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
-
+        var tempTotalPrice = ""
         // observe changes to set the total price
         cartViewModel.allFnbs.observe(viewLifecycleOwner, Observer {
                 fnbs -> fnbs?.let {
             val totalPrice = fnbs.sumOf { fnb -> fnb.fnbPrice * fnb.fnbQuantity }
-            val priceText: String = formatRupiah.format(totalPrice).toString()
-            binding.totalPrice.text = "Total price: " + priceText.substring(0, priceText.length - 3);
+            if (totalPrice != 0) {
+                val priceText: String = formatRupiah.format(totalPrice).toString()
+                binding.totalPrice.text = "Total price: " + priceText.substring(0, priceText.length - 3)
+                tempTotalPrice = priceText
+            } else {
+                binding.totalPrice.text = "Total price: " + tempTotalPrice.substring(0, tempTotalPrice.length - 3)
+            }
+
         }
         })
 
@@ -88,7 +94,6 @@ class PaymentFragment : Fragment() {
                 qrTextView.visibility = GONE
                 imageStatus.setImageResource(R.drawable.payment_success)
                 retryBtn.visibility = GONE
-                totalPrice.visibility = INVISIBLE
                 menuViewModel.resetQuantity()
                 cartViewModel.resetFnb()
 
