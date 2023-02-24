@@ -13,7 +13,7 @@ Terakhir, aplikasi ini menyediakan metode pembayaran menggunakan QR Code (terdap
 
 ## Screenshot Aplikasi
 Branch Page
-![Branch Page](screenshot/Branch Page.jpg)
+![]() <img src="screenshot/Branch Page.jpg" width="120">
 
 Cart Page
 ![Cart Page](screenshot/Cart Page.jpg)
