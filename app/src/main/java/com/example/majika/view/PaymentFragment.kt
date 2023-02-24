@@ -110,7 +110,7 @@ class PaymentFragment : Fragment() {
 
                     (activity as MainActivity).updateBottomNavbar(R.id.nav_menu)
                 }, 5000)
-            } else if (status == "FAILED") {
+            } else {
                 qrTextView.text = ""
                 imageStatus.setImageResource(R.drawable.payment_failed)
             }
