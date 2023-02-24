@@ -23,6 +23,7 @@ class ListMenuAdapter(val increaseClickListener: MenuItemIncreaseListener, val d
     }
 
     override fun onBindViewHolder(holder: ListMenuAdapter.MenuItemViewHolder, position: Int) {
+//        set listener for plus and minus quantity button
         val menuItem = getItem(position)
         holder.itemView.findViewById<ImageView>(R.id.imageButton2).setOnClickListener {
             increaseClickListener.onIncreaseClick(menuItem)

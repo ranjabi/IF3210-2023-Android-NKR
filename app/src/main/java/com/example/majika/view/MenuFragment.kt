@@ -52,6 +52,8 @@ class MenuFragment: Fragment() {
 
         // give binding access to menuViewModel
         binding.menuViewModel = menuViewModel
+
+        // listener for search filter
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
@@ -63,8 +65,10 @@ class MenuFragment: Fragment() {
             }
         })
 
+        // reset the filter whenever fragment is recreated
         menuViewModel.resetFilter()
 
+        // setting up the adapter for recycler view
         foodSectionHeaderAdapter = SectionHeaderAdapter(Datasource .getFoodTitle())
         foodItemAdapter = ListMenuAdapter(MenuItemIncreaseListener { name, price ->
             cartViewModel.addNewFnb(name, price)
@@ -89,6 +93,7 @@ class MenuFragment: Fragment() {
 
         binding.recyclerView.adapter = adapter
 
+        // set up the quantity for menu and sync it with database quantity
         Log.d(TAG, "init quantity")
         menuViewModel.foodItem.observe(viewLifecycleOwner) {
             // update menu view model for initial render
