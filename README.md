@@ -1,6 +1,15 @@
 # IF3210-2023-Android-NKR
 
+## Deskripsi Aplikasi
+NKR-Majika adalah sebuah aplikasi berbasis Android yang dapat digunakan untuk memesan makanan / minuman dari berbagai macam pilihan produk. 
+Aplikasi ini juga dapat digunakan untuk mencari lokasi sebuah restoran dan menunjukkan lokasinya menggunakan Google Maps. 
+Aplikasi ini juga menyediakan fitur twibbon yang dapat mengambil foto selfie dan menampilkannya serta menyimpan ke dalam internal storage.
+Terakhir, aplikasi ini menyediakan metode pembayaran menggunakan QR Code (terdapat QR Code scanner) yang dapat menunjukkan status pembayaran (sukses / gagal).
 
+## Library yang digunakan
+1. Moshi retrofit
+2. com.github.yuriy-budiyev:code-scanner:2.3.2
+3. Sliding pane layout
 
 ## Getting started
 
