@@ -31,7 +31,7 @@ class ListCartAdapter(
             increaseClickListener.onIncreaseClick(fnb.fnbName, fnb.fnbPrice.toString())
         }
         holder.decreaseCountBtn.setOnClickListener{
-            decreaseClickListener.onDecreaseClick(fnb.fnbName)
+            decreaseClickListener.onDecreaseClick(fnb.fnbName, fnb.fnbPrice.toString())
         }
         holder.bind(fnb.fnbName, fnb.fnbPrice, fnb.fnbQuantity)
     }
@@ -82,7 +82,7 @@ class CartItemIncreaseListener(
     fun onIncreaseClick(cartName: String, cartPrice: String) = clickListener.invoke(cartName, cartPrice)
 }
 class CartItemDecreaseListener(
-    val clickListener: (name: String) -> Unit?
+    val clickListener: (name: String, price: String) -> Unit?
 ) {
-    fun onDecreaseClick(cartName: String) = clickListener.invoke(cartName)
+    fun onDecreaseClick(cartName: String, cartPrice: String) = clickListener.invoke(cartName, cartPrice)
 }

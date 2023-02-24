@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 private const val TAG = "MenuViewModel"
 
 class MenuViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
-    private val _status = MutableLiveData<String>()
-    val status: LiveData<String> = _status
 
     val _foodItem = MutableLiveData<List<MenuItem>>()
     val foodItem: LiveData<List<MenuItem>> = _foodItem
@@ -36,9 +34,22 @@ class MenuViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
                 _filteredDrinkItem.value = drinkItem.value
                 Log.d(TAG, "api loaded")
             } catch (e: Exception) {
-                _status.value = "Failure: ${e.message}"
                 Log.d(TAG, "Failure: ${e.message}")
             }
+        }
+    }
+
+    fun resetFilter() {
+        _filteredFoodItem.value = foodItem.value
+        _filteredDrinkItem.value = drinkItem.value
+    }
+
+    fun resetQuantity() {
+        _foodItem.value?.forEach {
+            it.quantity = 0
+        }
+        _drinkItem.value?.forEach {
+            it.quantity = 0
         }
     }
 

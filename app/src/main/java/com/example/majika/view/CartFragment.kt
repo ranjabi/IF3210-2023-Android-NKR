@@ -46,11 +46,11 @@ class CartFragment : Fragment() {
             CartItemIncreaseListener { name, price ->
                 cartViewModel.addNewFnb(name, price)
             },
-            CartItemDecreaseListener { name ->
-                cartViewModel.removeFnbQuantityByName(name)
-                menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name }
+            CartItemDecreaseListener { name, price ->
+                cartViewModel.removeFnbQuantityByNameAndPrice(name, price)
+                menuViewModel._foodItem.value?.find { menuItem -> menuItem.name == name && menuItem.price == price }
                     ?.decreaseQuantity()
-                menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name }
+                menuViewModel._drinkItem.value?.find { menuItem -> menuItem.name == name && menuItem.price == price }
                     ?.decreaseQuantity()
             }
         )

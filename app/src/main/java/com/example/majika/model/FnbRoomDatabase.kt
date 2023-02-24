@@ -13,28 +13,6 @@ import kotlinx.coroutines.launch
 abstract class FnbRoomDatabase : RoomDatabase() {
     abstract fun fnbDao(): FnbDao
 
-    private class FnbDatabaseCallback(
-        private val scope: CoroutineScope
-    ) : RoomDatabase.Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-            Log.d("FnbRoomDatabase", "database is created")
-            INSTANCE?.let { database ->
-                scope.launch {
-                    var fnbDao = database.fnbDao()
-                    Log.d("FnbRoomDatabase", "callback is launched")
-
-                    val fnb = Fnb(fnbName = "Kecap", fnbPrice = 99999, fnbQuantity = 20)
-                    val fnb2 = Fnb(fnbName = "botol", fnbPrice = 11111, fnbQuantity = 2)
-
-                    fnbDao.insert(fnb)
-                    fnbDao.insert(fnb2)
-                    Log.d("FnbRoomDatabase", "callback is called")
-                }
-            }
-        }
-    }
-
     companion object {
         @Volatile
         private var INSTANCE: FnbRoomDatabase? = null
@@ -45,7 +23,7 @@ abstract class FnbRoomDatabase : RoomDatabase() {
                     context.applicationContext,
                     FnbRoomDatabase::class.java,
                     "fnb_database"
-                ).fallbackToDestructiveMigration().addCallback(FnbDatabaseCallback(scope)).build()
+                ).fallbackToDestructiveMigration().build()
                 Log.d("FnbRoomDatabase", "database build success")
                 INSTANCE = instance
                 return instance

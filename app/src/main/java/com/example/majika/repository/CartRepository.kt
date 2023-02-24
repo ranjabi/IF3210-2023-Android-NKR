@@ -1,5 +1,6 @@
 package com.example.majika.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.example.majika.model.Fnb
@@ -31,13 +32,14 @@ class CartRepository(private val fnbDao: FnbDao) {
     }
 
     suspend fun resetFnb() {
+        Log.d("CartRepo", "reset fnb")
         fnbDao.clearFnb()
     }
 
     // add new fnb that to be used in CartFragment
     suspend fun addNewFnb (fnbName: String, fnbPrice: String, fnbQuantity: String) {
         val newFnb: Fnb = newFnbEntry(fnbName, fnbPrice, fnbQuantity)
-            val fnb: Fnb = fnbDao.getFnbByName(fnbName)
+            val fnb: Fnb = fnbDao.getFnbByNameAndPrice(fnbName, fnbPrice.toInt())
             if (fnb == null) {
 //                Log.d(TAG, "fnb is not exist, insert to db")
                 insertFnb(newFnb)
@@ -67,8 +69,8 @@ class CartRepository(private val fnbDao: FnbDao) {
         }
     }
 
-    suspend fun removeFnbQuantityByName (name: String) {
-            val fnb: Fnb = fnbDao.getFnbByName(name)
+    suspend fun removeFnbQuantityByNameAndPrice (name: String, price: String) {
+            val fnb: Fnb = fnbDao.getFnbByNameAndPrice(name, price.toInt())
             if (fnb != null) {
                 if(fnb.fnbQuantity > 1) {
                     val updatedFnb: Fnb = fnb.copy(fnbQuantity = fnb.fnbQuantity - 1)
